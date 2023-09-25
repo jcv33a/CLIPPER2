@@ -1,0 +1,1807 @@
+THE EXTEND SYSTEM
+-----------------
+
+This file contains information and instructions on writing
+user-defined functions in other languages such as C and
+Assembler.  Topics covered include:
+
+		Description of the Clipper Extend System
+
+		Summary of Extend Functions
+
+		Interfacing with C
+
+		Sample C functions
+
+		Compiling and linking your C code
+
+		Interfacing with Assembly Language
+
+		Sample Assembly routines
+
+		Using assembly language macros (EXTENDA.MAC and
+		EXTENDA.INC)
+
+		Summary of Changes from Autumn '86
+
+
+DESCRIPTION OF THE Clipper EXTEND SYSTEM
+----------------------------------------
+
+Clipper allows you to write functions in other languages and
+provides tools to pass and return parameters to your functions.
+Your functions may then be used like any other function in the
+Clipper language.  For example, you may assign the value
+returned to a memory variable or display it on the screen.
+
+memvar = MyFunc(<exp>)
+?  MyFunc(<exp>)
+
+Clipper's Extend System gives you the ability to access the open
+architecture of the Clipper programming language and makes it
+possible for you to provide for yourself almost any feature or
+enhancement you desire.
+
+You may write Extend System functions C, or 8086 assembler and
+link them with your compiled application.  The functions in C
+and Assembler can be used to get information which the Clipper
+language does not have access to, such as database file
+structures or low level information available only through DOS
+interrupts.
+
+When you create a new user-defined function, you must take care
+in choosing a name that does not to conflict with internal
+functions or their four letter or longer abbreviations.  Your
+newly named function must be used in your code exactly as
+declared.  No abbreviations are permitted at all, so name your
+user-defined functions exactly as you want to use them.
+
+User-defined functions in C and Assembler, must be used
+explicitly in the application or be declared EXTERNAL at compile
+time in order for them to be included as symbols at link time.
+{User-defined functions in REPORT or LABEL FORMs or in INDEX key
+expressions must be declared EXTERNAL.  For example:
+
+EXTERNAL MyFunc(), YourFunc()
+
+
+SUMMARY OF EXTEND FUNCTIONS
+---------------------------
+
+Summary of Extend Functions
+
+Clipper Type	C Prototype				 		ASM 
+-----------------------------------------------------
+character     	char	*_parc(int [,int]) 		__PARC
+date			char	*_pards(int [,int])		__PARDS
+logical			int	 	_parl(int [,int])		__PARL
+numeric			int		_parni(int [,int])		__PARNI
+numeric			long	_parnl(int [,int])		__PARNL
+numeric			double 	_parnd(int [,int])		__PARND
+
+
+character		void	_retc(char*)	 		__RETC
+date			void 	_retds(char*)			__RETDS
+logical			void 	_retl(int)				__RETL
+numeric			void 	_retni(int)				__RETNI
+numeric			void 	_retnl(long)			__RETNL
+numeric			void 	_retnd(double)			__RETND
+(no return value)	void	_ret()				__RET
+
+						_parclen(int [,int])    __PARLEN
+						_parcsiz(int [,int])    __PARCSIZ
+						_retclen(int)           __RETCLEN
+
+
+INTERFACING WITH C
+------------------
+
+Clipper supports user-defined functions written in C through the
+Extend System.  This is a somewhat higher level interface system
+than the usual CALLs, in that you use specialized functions for
+both passing parameters to and from the routine.
+
+These functions reside in the Clipper library.  Your C routine
+must declare them by including EXTEND.H.  This file contains the
+program declarations and macro definitions necessary to write
+user-defined functions in C.
+
+Receiving Parameters in C
+
+The concept of C formal parameters disappears at this point.
+All parameters may be accessed using the _par() functions.
+Therefore, all C functions accessed through the Extend System
+are declared up with no formal parameters.
+
+Returning Values From C
+
+The _ret() are used to return values back to Clipper.  Each
+function, by definition, can return only one value.  The choice
+of which _ret() function you use depends on the data type being
+returned.
+
+Sample C Functions
+
+Once you compute the value you want to return, pass it to the
+appropriate _ret() function and it becomes the function return
+value.  It is still, however, necessary to execute a C return.
+_ret() functions do not pass control back to Clipper.
+
+Here is a shell of a typical Clipper user defined function
+written in C:
+
+CLIPPER <function_name>()
+/* formal C parameters omitted */
+{
+	<declarations of local variables>
+
+	if (<parameters are valid>)
+	{
+		<code to execute>
+	}
+	else
+	{
+		<code to execute for undefined parameters>
+		return;
+	}
+}
+
+
+In Clipper:
+
+DECLARE arr[3]
+arr[1] 	= "Devorah"
+arr[2] 	= 456.56
+arr[3] 	= CTOD("09/01/87")
+Arrfunc(arr)
+
+In C:
+
+#include "extend.h"      /* Declare Extend System */
+#include "stdio.h"		/* standard io library */
+#include "math.h"		/* standard math libaray */
+
+CLIPPER arrfunc() 		/* specify CLIPPER */
+					/* macro to define function */
+{
+	int i;
+
+	for (x = 1; x <= 3; ++x)
+	{
+		/* string variables */
+		if (_parinfa(1, x) == CHARACTER)
+		{
+			cprintf("%s\n", _parc(1, x));
+		}
+
+		/* integer or floating point */
+		if (_parinfa(1,X) == NUMERIC)
+		{
+			cprintf("%f\n", _parnd(1, x));
+		}
+		else
+			/* dates */
+			if (_parinfa(1, x) == DATE)
+			{
+				cprintf("%s\n", _pards(1, i));
+			}
+	}
+	_ret();
+}
+
+Note: The use of cprintf() above is for demonstration purposes
+only.  We recommend that all terminal I/O be done through
+Clipper. 
+
+
+Compiling and Linking Your C Code
+
+To compile a Microsoft C 5.0 routine that can be MS-linked with
+Clipper Summer '87:
+
+CL /c /AL /Zl /Oalt /FPa /Gs <filename>.c
+
+where:
+
+CL  = the compiler command
+/c  = compile without linking
+/AL = set program configuration for (L)arge model
+/Zl = remove default (l)ibrary-search records from
+      object file
+/Oalt = control optimization
+
+where:
+
+	a = relax alias checking
+	l = enable loop optimization
+	t = favor execution speed
+
+/FPa  = floating point (a)lternate library
+/Gs = remove calls to (s)tack-checking routine
+
+
+Predefined C Macros
+
+To simplify the syntax and make the code more readable, Extend.h
+sets up several "parameter check" macros used in the if
+statements in Extendc.c for parameter checking.  The following
+is a table of macros that provide a more convenient way of
+parameter validation:
+
+#defines in Extend.h
+
+Type			Returns
+-------------------------
+undefined		=	UNDEF
+character		=	CHARACTER
+numeric			=	NUMERIC
+logical			=	LOGICAL
+date			=	DATE
+by reference	=	MPTR 	/* or'ed with type when passed by reference */
+memo			=	MEMO
+array			=	ARRAY
+
+
+Predefined C Interface Macros
+
+EXTEND.H Macro		Defined as 
+-------------------------------
+PCOUNT				(_parinfo(0))
+ISCHAR(order)		(_parinfo(order) & CHARACTER)
+ISNUM(order)		(_parinfo(order) & NUMERIC)
+ISLOG(order)		(_parinfo(order) & LOGICAL)
+ISDATE(order)		(_parinfo(order) & DATE)
+ISMEMO(order)		(_parinfo(order) & MEMO)
+ISBYREF(order)		(_parinfo(order) & MPTR)
+ISARRAY(order)		(_parinfo(order) & ARRAY)
+ALENGTH(order)		(_parinfa(order, 0))
+
+Within the user-defined function, you can use the PCOUNT macro
+and any of the IS<type> macros to determine how many parameters
+were passed and their type.  This enables you to validate
+parameters insuring the correct number and type passed.  It
+additionally allows you to pass variable numbers of parameters
+of various types.
+
+
+Reference - Extend System C Interface Functions
+-----------------------------------------------
+
+
+_exmback()
+
+Free allocated memory
+
+Syntax Usage:
+
+#include	<extend.h>
+
+void 		*_exmback(pointer, bytes)
+
+unsigned char	*pointer;		Pointer from _exmgrab()
+unsigned int	bytes;		Size passed to _exmgrab()
+
+Description: 
+
+_exmback() releases the memory allocated by _exmgrab(). 
+Note that the same pointer and size used in _exmgrab must be
+passed as parameters.  
+
+Example:
+
+size = 512
+buff = _exmgrab(size)		/* allocate memory */
+if (buff)					/* if successful (!null) */
+	check = TRUE;
+.
+.
+.
+if (check)
+	_exmback(buff, size);		/* deallocate memory */
+
+
+
+_exmgrab()
+
+Allocate memory
+
+Syntax Usage:
+
+#include	<extend.h>
+
+unsigned char	*_exmgrab(bytes)
+
+unsigned int	bytes;	Requested amount of memory
+
+Description: 
+
+_exmgrab() allocates an amount of memory in bytes.  If
+successful, it returns a char pointer to the allocated space in
+memory; otherwise, it returns NULL.
+
+Example:
+
+size = 512
+buff = _exmgrab(size)		/* allocate memory */
+if (buff)					/* if successful (!null) */
+	check = TRUE;
+
+
+
+_parc()
+
+Passes pointer to Clipper character string
+
+Syntax Usage:
+
+#include	<extend.h>
+
+char		*_parc(order, index)
+
+int		order;	Placement in actual parameter list
+int		index;	Array element index
+
+Description: 
+
+_parc() is used for getting a character parameter from Clipper.
+If passed by value the copy is char *.  If passed by reference,
+you are acting on actual Clipper data.
+
+
+_parclen()
+
+Length of character string
+
+Syntax Usage:
+
+#include	<extend.h>
+
+int		_parclen(order, index)
+
+int		order;	Placement in actual parameter list
+int		index;	Array element index
+
+Description: 
+
+_parclen() returns the length of a given string.  It is used
+primarily with respect to CHR(0).  This has two uses:
+
+		Check for the length of a string with embedded
+		CHR(0)s in it.
+
+		Get the length of a string without counting the
+		null terminator.
+
+
+
+_parcsiz()
+
+Allocated size of a character string
+
+Syntax Usage:
+
+#include	<extend.h>
+
+int		_parcsiz(order, index)
+
+int		order;	Placement in actual parameter list 
+int		index;	Array element index
+
+Description:
+
+_parcsiz() returns the number of bytes in memory allocated for
+the specified string including the null terminator.  Note that
+_parsize() returns zero for constants, e.g. DO <process> WITH
+"ABC".
+
+
+_pards()
+
+Passes character pointer to Clipper date
+
+Syntax Usage:
+
+#include	<extend.h>
+
+char		*_pards(order, index)
+
+int		order;	Placement in actual parameter list 
+int		index;	Array element index
+
+Description: 
+
+_pards() gets a date parameter from Clipper and returns a char *
+in the form YYYYMMDD.  Note that there is only one _pards()
+pointer on the stack and therefore you must strcopy() the result
+to a variable.  You cannot simply pass the pointer.
+
+
+_parinfa()
+
+Parameter type-checking of array elements
+
+Syntax Usage:
+
+#include	<extend.h>
+
+int		_parinfa(order, index)
+
+int		order;		Placement of the array in parameter
+list
+int		index;		Array element index 
+
+Description: 
+
+_parinfa() returns type of an array element and is used for
+parameter type-checking.  Since Clipper arrays can have mixed
+type elements, each one has to be type-checked before they can
+be used.  Note that _parinfa(<n>, 0) returns the number of array
+elements.
+
+Example:
+
+The following example, arrfunc(), takes an array defined
+in Clipper and displays all the elements formatted according to
+data type to the console.
+
+In Clipper:
+
+DECLARE array[2]
+array[1] = "Devorah"
+array[2] = 456.56
+ArrFunc(array)
+
+In C:
+
+for (x = 1; x <= _parinfa(1, 0); ++x)
+
+{   /* string variables */
+	if (_parinfa(1, x) == CHARACTER)
+	{
+		cprintf("%s\n", _parc(1, x));
+	}
+
+	/* integer or floating point */
+	if (_parinfa(1, x) == NUMERIC)
+	{
+		cprintf("%f\n", _parnd(1, x));
+	}
+}
+
+
+
+_parinfo()
+
+Parameter type checking 
+
+Syntax Usage:
+
+#include <extend.h>
+
+int		_parinfo(order)
+
+int		order; 	Placement in list of
+				parameters to type-check
+						 
+Description:  
+
+_parinfo() is used to test the type of a passed parameter.
+_parinfo(0) returns the number of parameters passed and
+_parinfo(<n>) returns the type of parameter <n> where <n> is the
+position in the parameter list.  The value returned is one the
+following:
+
+/* _parinfo types from extend.h*/
+#define UNDEF		0
+#define CHARACTER	1
+#define NUMERIC	    2
+#define LOGICAL	    4
+#define DATE		8
+#define ALIAS		16
+#define MPTR		32		/* or'ed with type when passed by reference */
+#define MEMO		65
+#define WORD		128
+#define ARRAY		512
+
+Example: 
+
+The following user-defined C function, cfunc(), recieves four
+parameters from Clipper, a character type, a numeric, a logical,
+and a date; defines the C variables to receive the values, then
+validates the parameters:
+
+CLIPPER cfunc()          /* no formal parameters */
+{
+char 		*parm1;
+double 	parm2;
+int 		parm3;         /* logical is declared as int */
+char 		*parm4;        /* date declared as char (YYYYMMDD) */
+
+if (PCOUNT == 4 && ISCHAR(1) && ISNUM(2) && ISLOG(3) && ISDATE(4))
+
+	{
+		<code to execute parameters valid>
+	}
+	else
+	{
+		<code to execute parameters invalid>
+	}
+
+}
+
+
+
+_parl()
+
+Passes Clipper logical to int
+
+Syntax Usage:
+
+#include	<extend.h>
+
+int		_parl(order, index)
+
+int		order;	Placement in actual parameter list
+int		index;	Array element index
+
+Description: 
+
+_parl() gets a logical parameter from Clipper and converts it to
+int where (1 = .T. and 2 = .F.).
+
+
+
+_parnd()
+
+Passes a Clipper numeric to double
+
+Syntax Usage:
+
+#include	<extend.h>
+
+double	_parnd(order, index)
+
+int		order;	Placement in actual parameter list 
+int		index;	Array element index
+
+Description: 
+
+_parnd() gets a numeric parameter from Clipper and converting it
+to double.
+
+
+_parni()
+
+Passes Clipper numeric to int
+
+Syntax Usage:
+
+#include 	<extend.h>
+
+int		_parni(order, index)
+
+int		order;	Placement in actual parameter list 
+int		index;	Array element index
+
+Description: 
+
+_parni() gets a numeric parameter from Clipper converting it to
+int.
+
+
+_parnl()
+
+Passes Clipper numeric to long
+
+Syntax Usage:
+
+#include	<extend.h>
+
+long		_parnl(order, index)
+
+int		order;	Placement in actual parameter list 
+int		index;	Array element index
+
+Description: 
+
+_parnl() gets a numeric parameter from Clipper converting it to
+long.
+
+
+
+_ret()
+
+Return to Clipper
+
+Syntax Usage:
+
+#include	<extend.h>
+
+void		_ret(void)
+
+Description: 
+
+_ret() has no Clipper return value.  This is useful so you can
+execute a C function using the DO command as if it were a
+Clipper procedure.
+
+
+_retc()
+
+Pass a character string to Clipper
+
+Syntax Usage:
+
+#include	<extend.h>
+
+void		_retc(string)
+
+char		*string;		Pointer to return string
+
+Description:
+
+_retc() returns the char* to Clipper for the character string
+you want to pass back to your application program.
+
+
+_retclen()
+
+Pass the length of a string to Clipper
+
+Syntax Usage:
+
+#include	<extend.h>
+
+void		_retclen(string, int)
+
+char 	*string;	Character string to return the length of
+int		int;		Position in string to start the count
+
+Description:
+
+_retclen() returns the logical length of a string including
+embedded CHR(0)s.
+
+
+_retds()
+
+Pass a date string to a Clipper date
+
+Syntax Usage:
+
+#include	<extend.h>
+
+void		_retds(string)
+
+char		*string;	Date string in the form (YYYYMMDD)
+
+Description:
+
+_retds() passes to Clipper as date type a char* to a string in
+the form YYYYMMDD.
+
+
+_retl()
+
+Pass an int to a Clipper logical
+
+Syntax Usage:
+
+#include	<extend.h>
+
+void		_retl(flag)
+
+int		flag;		Boolean value
+
+Description:
+
+_retl() passes an int to Clipper as a logical value, where 1 is
+true (.T.) and 0 is false (.F.).
+
+
+_retnd()
+
+Pass a double to a Clipper numeric
+
+Syntax Usage:
+
+#include	<extend.h>
+
+void		_retnd(x);
+
+double	x;		Numeric expression 
+
+Description:
+
+_retnd() passes a double to Clipper as numeric type.
+
+
+
+_retni()
+
+Pass an int to a Clipper numeric
+
+Syntax Usage:
+
+#include	<extend.h>
+
+void		_retni(n)
+
+int		n;		Numeric expression
+
+Description:
+
+_retni() passes an int to Clipper as a numeric integer.
+
+
+
+_retnl()
+
+Pass a long to a Clipper numeric
+
+Syntax Usage:
+
+#include	<extend.h>
+
+void		_retnl(n)
+
+long		n;		Long numeric expression
+
+Description:
+
+_retnl() passes a long integer to Clipper as numeric type.
+
+
+
+INTERFACING WITH ASSEMBLY LANGUAGE
+----------------------------------
+
+In addition to supporting a mixed language interface to C and
+other high-level langauges, Clipper also supports user-defined
+functions written in assembler through the Extend System.  Like
+the interface to C, the Extend System provides access to the
+parameter passing and returning functions.  These are the same
+functions available from C differing only by the method of
+access.  Here you must manipulate the stack in order that the
+proper values are known when Clipper is called.  To make this
+process easier and more rational, two set of macros are included
+(EXTENDA.MAC and EXTENDA.INC).  EXTENDA.MAC is similar to
+earlier versions of Clipper and is provided in Summer '87 as
+means of retaining compatibility with assmbler code written for
+Autumn '86.  EXTENDA.INC is a new set of macros developed for
+use with Summer '87 and Microsoft MASM version 5.0.
+
+Passing Parameters
+
+These are the functions used for obtaining the parameters being
+passed from your Clipper code.  When you use the __PAR
+functions,  follow the pseudo sequence below:
+
+		move the parameter number to be obtained into a
+		register
+
+		push the register
+
+		call the appropriate __PAR function for the data
+		type of the parameter
+
+		the parameter is received in registers, either by
+		value or by pointer
+
+		restore the stack
+
+In addition, it is important to remember that Clipper is written
+in C and all parameters are passed as C data types.
+
+
+Sample Assembly Routines
+
+To interface an assembly language routine to Clipper using the
+Extend System requires that you follow some specific rules.
+
+		Declare your routine PUBLIC.
+
+		Declare the Extend functions to be used as EXTRN
+		and FAR or INCLUDE EXTENDA.INC which makes these
+		declarations for you.
+
+		If you define your own data segment, group it
+		together with Clipper's DGROUP.  Otherwise, DS must
+		point to DGROUP before you call any Extend function.
+
+		Class your data segment as DATA for Autumn '86 or
+		_DATA for Summer '87.
+
+		Class your code segment PROG for Autumn '86 or
+		CODE for Summer '87.
+
+		If have not passed a value back to Clipper, call
+		__RET just before your assembler routine ENDS.
+
+The following is a shell of a typical Clipper user-defined
+function written in assembly language that demonstrates these
+rules:
+
+PUBLIC 	<func_name>		
+;
+EXTRN	<extend_func>:FAR
+;
+DGROUP GROUP	<data_seg>
+<data_seg>	SEGMENT PUBLIC '_DATA'
+;
+;	<your data declarations>
+;
+<data_seg>	ENDS				
+;
+;
+<code_seg>	SEGMENT 'CODE'	
+			ASSUME cs:<code_seg>, ds:DGROUP
+
+<func_name>	PROC FAR
+		push	bp			; Save registers
+		mov	bp,sp
+		push ds
+		push es
+		push si
+		push di
+
+		< your code goes here >
+
+		pop  di			; Restore registers
+		pop  si
+		pop  es
+		pop  ds
+		pop  bp
+		<func_name> ENDP	; End of routine
+
+<code_seg>	ENDS			; End of code segment
+		END
+
+
+Example:
+
+The following is an operational assembly language routine that
+clears a region of the screen.
+
+In Clipper:
+
+Clearit(10, 10, 20, 60)
+	
+In assembly language:
+
+PUBLIC Clearit	; Declare as public.
+;
+EXTRN	__PARNI:FAR	; Declare functions
+EXTRN	__RET:FAR		; as external.
+;
+DGROUP GROUP	DATASG	; Combine your data segment
+                        	; with Clipper's.
+DATASG SEGMENT '_DATA'	; Start of data segment.
+
+top		DB	0
+left	DB	0
+bottom	DB	0
+right	DB	0
+
+DATASG	ENDS			; End of data segment.
+;
+;
+_PROG	segment 'CODE'	; Start of code segment.
+ASSUME	cs:_PROG,ds:DGROUP
+;
+;
+CLEARIT	PROC	FAR		; Start of process.
+
+	push bp			; Preserve return address.
+	mov	bp,sp
+
+	push ds			; Save registers.
+	push	es
+	push si
+	push di
+
+	mov	ax,1			; Point to parameter.
+	push ax			; Place on stack.
+	call __PARNI		; Call Clipper.
+	add	sp,2			; Restore stack.
+	mov	top, al		; Assign parameter to top.
+	
+	mov	ax,2		; Repeat process for next parameter.
+	push	ax
+	call __PARNI
+	add	sp,2
+	mov	left, al		; Assign to left.
+
+	mov	ax,3		; Repeat process for next parameter.
+	push ax
+	call __PARNI
+	add	sp,2
+	mov	BOTTOM,al		; Assign to bottom.
+
+	mov	ax,4		; Repeat process for next parameter.
+	push ax
+	call __PARNI
+	add	sp,2
+	mov	right,al		; Assign to right.
+	
+	mov	ch,top		; Place coordinates in CX:DX.
+	mov	cl,left		
+	mov	dh,bottom		
+	mov	dl,right		
+
+	mov	ax,0600h		; Request roll up service.
+	mov	bh,07		; Normal attribute.
+	int	10h			; Issue video interrupt.
+
+	pop	di
+	pop	si
+	pop	es			; Restore registers.
+	pop	ds
+	pop	bp
+
+	call __RET		; Clipper return (actual cleaning).
+
+	ret				; Actual physical return.
+CLEARIT	ENDP			; End of process.
+_prog	ENDS
+	END
+
+Note that since assembly language gives you access to the lowest
+level of software and hardware interaction, exercise appropriate
+caution.  All the above functions require that you save the
+registers before you can use them to call the functions.  Make
+sure that after calling any Extend function to restore the stack
+by incrementing the stack pointer (SP).  Failure to restore the
+original environment will usually cause the system to crash.
+
+
+
+ASSEMBLY LANGUAGE EXTEND MACROS
+-------------------------------
+
+A macro in assembler serves a similar function to macro
+substution in Clipper.  Essentially you substitute a symbolic
+name for the text of command statements.  In Clipper, you can
+substitute macros for expressions and literal constants.  In
+assembler, the implementation is much broader.  You can
+substitute macros for entire blocks of code and additionally
+pass parameters to the macro code.  When MASM encounters the
+macro reference at assembly time, it substitutes the associated
+code for the macro name and the text of the parameter name with
+the actual parameter information.
+
+Macros can be defined within the source file in which they are
+used or within INCLUDE files.  INCLUDE files are the most
+fruitful place to store macros since this allows you to isolate
+code that is volital or environment specific.
+
+
+EXTENDA.MAC
+
+EXTENDA.MAC is provided in Clipper Summer '87 to give
+compatility with assembler routines that interface with Autumn
+'86 and used the Autumn '86 version of EXTENDA.MAC.
+
+Warning: EXTENDA.MAC macros do not save registers used
+automatically.  You must, therefore, save registers of
+importance to you before calling any of these macros.
+
+The file EXTENDA.MAC contains the following macros:
+
+		EXTENDA.MAC Macros
+
+Macro			Function
+------------------------------------------
+GET_PCOUNT		Number of parameters passed
+GET_PTYPE	    Type of parameter passed
+GET_CHAR	    Address of a string in DX:AX
+GET_INT			Integer in AX
+GET_LONG		Long integer in DX:AX
+GET_DBL			Double in AX:BX:CX:DX
+GET_DATESTR		Address of date string in DX:AX
+GET_LOGICAL		Logical in AX
+RET_CHAR		Returns string pointed to
+RET_INT			Returns integer
+RET_LONG		Returns long integer
+RET_DBL			Returns double
+RET_DATESTR		Returns date string
+RET_LOGICAL		Returns logical value
+
+
+
+EXTENDA.INC
+
+A new system of Assembler Macros has been developed by Nantucket
+to facilitate the use of Assembly language within Clipper
+applications.  These Macros require an assembler compatible with
+Microsoft MASM 5.0.  To use them, place the following directive
+at the beginning of the Assembler source file:
+
+INCLUDE EXTENDA.INC
+
+With the use of this Macro system, a User Defined Function
+written in Assembly language has the following general format:
+
+    CLpublic  list_of_UDFs
+
+;*******
+;
+    CLfunc  function_type  function_name  [parameter_list]
+    CLcode
+        .
+        . body of function
+        .
+    CLret  return_value
+
+
+    More specifically, and to illustrate actual syntax:
+
+    CLpublic  <CRYPT, MYFUNC, YOURFUNC, THISFUNC, THATFUNC>
+
+;*******
+;
+;   str = CRYPT(str, len)
+;   encrypt/decrypt a character string
+;
+    CLfunc  char  CRYPT  <char str, int len>
+
+    CLcode
+        PUSH    ES
+
+    ; test for valid parameter
+        CMP     PCOUNT, 2
+        JB      CRYPT_RET
+        TESTNUL str
+        JZ      CRYPT_RET
+
+    ; parameters acceptable
+        LES     SI, str
+        MOV     BX, 0
+
+CRYPT_LOOP:
+       CMP	BX, len
+       JE      CRYPT_RET
+       NOT     BYTE PTR ES:[BX + SI]
+       INC     BX
+       JMP     CRYPT_LOOP
+
+CRYPT_RET:
+        POP     ES
+    CLret  str
+
+The angle brackets <> are required by MASM.  The use of mixed
+upper and lower case is necessary only if the file is to be
+assembled with case sensitivity enabled.  We will assume that
+case sensitivity IS enabled for the remainder of this
+discussion.
+
+
+The Basic Four Macros: CLpublic, CLfunc, CLcode, CLret
+
+There are many other macros in the package, but these four
+represent a minimum for getting started, so let's take a closer
+look at them and the concept in general.
+
+CLpublic  <CRYPT, MYFUNC, YOURFUNC, THISFUNC, THATFUNC>
+
+Every function to be called from within Clipper must be declared
+public in this way.  Note that funcion names are upper case and
+separated by commas.
+
+CLfunc  char  CRYPT  <char str, int len>
+
+This is the function declaration.  It tells the macro system
+several things about the function including the return type,
+function name, and parameter list.  Note that each parameter in
+the list is declared to be of a particular type.  This list must
+be omitted completely if there are no parameters.
+
+CLcode
+
+This is implemented as a separate step because some of the
+optional macros are allowed or required to appear between the
+function declaration and the start of the function.  The actual
+code for setting up a user-defined function is placed here.
+Everything necessary for the Clipper interface (including the
+fetching of parameters and run-time type checking) is generated
+by this macro.  When this code is executed at runtime, it stores
+PCOUNT (the Clipper Parameter COUNT) so that it may be accessed
+at any point in the function.  Additionally, parameters that are
+not supplied and parameters of the wrong data type are set to
+zero (NUL).  The macro TESTNUL can be used to test for any null
+parameter, and should ALWAYS be used to test for a null pointer.
+
+CLret  str
+
+This macro generates the cleanup code for a proper return to
+Clipper.  It performs an assembly-time type check of the return
+value based on the function type declared in CLfunc.  If a
+function is declared as type "int," the return value can be any
+16-bit register (i.e. "CLret CX"), or any variable of type
+"int".  Similarly, a function declared as type "char" will
+return a pointer to a string.  In this case, the return value
+can be any 2 sixteen bit registers (i.e. "CLret BX DX"), or any
+variable of type "char".  Although functions declared "void"
+have NO return value, the CLret macro must still be called but
+without the return value.
+
+Macros designed to appear in assembler source code are listed
+below with syntax and some detail.  See EXAMPLEA.ASM for more
+examples.  Also, many of these macros call each other within the
+include file itself.
+
+
+REFERENCE - EXTENDA.INC
+-----------------------
+
+CLpublic <FUNC1, FUNC2, ...>
+
+Declares one or more functions public.  All functions to be
+called from within a Clipper application must be declared public
+in this way.  Function names must be upper case.
+
+
+CLfunc ftype NAME <ptype p1, ptype p2, ...>
+
+Declare a function.  NAME must be upper case.  The function type
+determines how the specified value will be returned to Clipper
+in the subsequent call to CLret.  Allowable function types
+(ftype) are char, int, long, double, log, date, and void.  The
+void type is for functions that return no value at all.
+Allowable parameter types (ptype) are char, int, long, double,
+log, and date.
+
+
+CLcode
+
+This macro must be called before the body of the function.  At
+runtime, PCOUNT is set to the number of incoming parameters.
+Missing parameters and parameters of the wrong data type are set
+to zero.
+
+
+CLret r
+
+Type checking is enforced according to the return type specified
+in the function declaration (CLfunc).  Allowable return values
+(r) include any variable of the correct type, one or two 16-bit
+registers depending on the size of the declared function type,
+or nothing if the function has been declared void.
+
+
+PCOUNT
+
+Set by CLcode to the number of incoming parameters.  The value
+stored in PCOUNT can be accessed at any point in the function.
+
+
+TESTNUL variable
+
+Sets the zero flag if variable is zero (NUL).  This macro can be
+used to test any size variable, but MUST be called to test
+pointers.
+
+
+CODESEG segname
+
+The default code segment is filename_TEXT where filename
+represents the base name of the source file.  If this macro is
+used to override the default, the code segment will be declared
+as segname_TEXT instead.  This macro must appear before any
+code-generating macros that would cause the default code segment
+to be declared (i.e. CLfunc or WORKFUNCS).
+
+
+DATASEG segname
+
+This macro works much the same as CODESEG except that the DATA
+segment is being declared.  The default data segment is _DATA.
+Unlike CODESEG, however, DATASEG is not called automatically.
+It is not necessary to call this macro unless there is static
+data to be declared, in which case DATASEG must be called before
+CLstatic.  The segname parameter is optional.
+
+
+CLstatic <stype v1 i1, stype v2 i2, ...>
+
+Declares static data where v is a variable and i is an initial
+value to be placed in v.  Allowable static types (stype) are
+byte, len, int, log, long, double, cptr, and string.  Several of
+these types will be better understood with further explanation.
+
+len is used to determine the size of the data block between the
+current address and i, where i is a previously defined label.
+For example:
+
+    CLstatic <byte msg1 "This is a test...">
+    CLstatic <len msglen1 msg1>
+    CLstatic <byte msg2 "this is ONLY a test.">
+    CLstatic <len msglen2 msg2, len msglen3 msg1>
+
+This defines the following values:
+
+    msglen1 = size of msg1
+    msglen2 = size of msg2
+    msglen3 = msglen1 + msglen2.
+
+The cptr type will cause the additional symbols v_OFF and v_SEG
+to be defined.  These symbols facilitate access to just the
+segment or just the offset portion of a pointer.  Static
+pointers can be initialized (at assembly time) to point to
+static data.
+
+The string type is much the same as byte except that a null byte
+is added at the end of the string.
+
+
+CLlocal <ltype l1, ltype l2, ...>
+
+Declares auto (stack based) data.  This macro can only appear
+between CLfunc and CLcode.  Allowable local types (ltype) are
+char, int, long, double, log, and date.
+
+
+CLextern <xtype x1, xtype x2, ...>
+
+Declares external code and data.  Allowable external types
+(xtype) are byte, int, log, long, double, cptr, and far.  Far is
+used to declare external functions.  Cptr is used to access
+external pointers in the form segment:offset.
+
+
+CLlabel <ltype l1, ltype l2, ...>
+
+Label a memory address using the assembler LABEL pseudo op.
+Allowable label types (ltype) are byte, int, log, long, double,
+cptr, and string.  The cptr type will cause the additional
+symbols l_OFF and l_SEG to be defined.  These symbols facilitate
+access to just the segment or just the offset portion of a
+pointer.
+
+Cglobal <v1, v2, ...>
+
+Use this macro to make static data available to other modules.
+Data declared global cannot be accessed directly by a Clipper
+application, but other modules written in C or Assembly language
+can share data this way.
+
+Ccall cfunc <param1, param2, ...>
+
+Call a C function.  This macro will handle all parameters and
+stack manipulation to interface with the C language.  Param can
+be any 16 bit register, a defined variable, or a constant
+(immediate) value.  For example, if cfunc has been declared
+external with CLextern:
+
+Ccall cfunc <str, AX, i, 5>
+
+
+WORKFUNCS
+
+Begin local assembler routines.  This macro handles the segment
+delarations only.  Within the WORKFUNCS block standard Assembly
+language practice should be observed.  Procedures must be
+declared explicitely and ended with the ENDP directive.
+
+
+ENDWORK
+
+End local assembler routines.  This macro must be called to
+terminate the WORKFUNCS block.  If WORKFUNCS is followed by
+CLfunc, ENDWORK will be called automatically.  However, if
+WORKFUNCS is at the end of the file, ENDWORK must be called
+explicitely.
+
+
+SES reg16
+
+The compliment of LES..stores ES and a named register to a DWORD
+memory operand.  For example:
+
+SES    DI, pointer_variable
+
+SDS reg16
+
+The compliment of LDS..stores DS and a named register to a DWORD
+memory operand.  For example:
+
+SDS    SI, pointer_variable
+
+
+DOSREQ number
+
+Calls DOS interrupt 21H with the request specified by number.
+All necessary setup (other than loading the AH register) must be
+performed before issuing this call.
+
+
+$define symbol value
+
+Makes assembler equate look like a C #define and may be used
+instead of the assembler statement "symbol EQU value".
+
+
+OFFPART p
+
+The first word of a DWORD memory operand (segment:offset)
+
+
+SEGPART p
+
+The second word of a DWORD memory operand (segment:offset)
+
+
+LSW n
+
+The first word of a DWORD memory operand (32 bit number)
+
+
+MSW n
+
+The second word of a DWORD memory operand (32 bit number)
+
+
+Special Note
+
+The END directive that tells MASM when to stop is NOT generated
+by any of the macros and must be entered explicitely.
+
+
+
+REFERENCE - EXTEND SYSTEM ASSEMBLY LANGUAGE FUNCTIONS
+-----------------------------------------------------
+
+__PARC
+
+Syntax Usage:
+
+mov		x,<word>
+push	ax
+call	__PARC
+add		p,2
+
+Arguments:
+
+<word> is the placement order in the parameter list.
+
+Description:
+
+This routine places the address of a Clipper character string in
+DX:AX where:
+
+DX = segment
+AX = offset
+
+
+
+__PARDS
+
+Syntax Usage:
+
+mov		x,<word>
+push	ax
+call	__PARDS
+add		p,2
+
+Arguments:
+
+<word> is the placement order in the parameter list.
+
+Description:
+
+This routine places the address of a Clipper date stored as a
+string in the form YYYYMMDD in DX:AX where:
+
+DX = segment
+AX = offset
+
+
+__PARINFO
+
+Syntax Usage:
+
+mov		x,<word>
+push	ax
+call	__PARINFO
+add		sp,2
+
+Argument:
+
+<word> is the placement order in the parameter list.
+
+Description:
+
+If the <word> argument is zero, __PARINFO places the number of
+parameters passed in AX.  If the <word> argument is greater than
+zero, _PARINFO places the type of the specified parameter in AX
+using the following values:
+
+Type			Value placed in AX
+----------------------------------
+undefined		0
+character		1
+numeric			2
+logical			4
+date			8
+by reference	32
+memo			65
+
+Note that only the SP, BP, DS, SS, CS and IP registers are
+preserved.
+
+
+__PARL
+
+Syntax Usage:
+
+mov 	ax,<order>
+push	ax
+call	__PARL
+add		sp,2
+
+; Pass a parameter from an array.
+mov 	ax,<order>
+mov  	bx,<index>
+push 	bx
+push	ax
+call	__PARL
+add		sp,4
+
+Arguments:
+
+Type: word <ORDER> is the placement order in the parameter list.
+
+Type: word <INDEX> is the index of the array element to be
+accessed.
+
+Description:
+
+This routine places the word of a Clipper logical value in AX
+where 1 is true (.T.) and 0 is false (.F.).
+
+
+__PARND
+
+Syntax Usage:
+
+mov  	ax,<order>
+push	ax
+call	__PARND
+add		sp,2
+
+; Access a numeric double from a passed array.
+mov 	ax,<ORDER>
+mov  	bx,<INDEX>
+push 	bx
+push	ax
+call	__PARND
+add		sp,4
+
+Arguments:
+
+Type: word <order> is the placement order in a parameter list.
+Type: word <index> is the index of array element to be accessed.
+
+Description:
+
+This routine places the address of double passed from a Clipper
+numeric in DX:AX where:
+
+DX = segment
+AX = offset
+
+To get the value in AX:BX:CX:DX, you would:
+
+mov		ax,<order>
+push 	ax
+call 	__PARND
+add 	sp,2
+mov 	es,dx
+mov 	si,ax
+mov 	ax,es:[si]
+mov 	bx,es:[si + 2]
+mov 	cx,es:[si + 4]
+mov 	dx,es:[si + 6]
+
+
+__PARNI
+
+Syntax Usage:
+
+mov  	ax,<order>
+push	ax
+call	__PARNI
+add		sp,2
+
+; Access a numeric integer from a passed array.
+mov		ax,<order>
+mov  	bx,<index>
+push 	bx
+push	ax
+call	__PARNI
+add		sp,4
+
+Arguments:
+
+Type: word <order> is the placement order in a parameter list.
+Type: word <index> is the index of array element to be accessed.
+
+Description:
+
+This routine receives a Clipper integer number and places the
+value in AX.
+
+
+__PARNL
+
+Syntax Usage:
+
+mov		ax,<ORDER>
+push	ax
+call	__PARNL
+add		sp,2
+
+; Access a numeric long from a passed array.
+mov  	ax,<order>
+mov  	bx,<index>
+push 	bx
+push	ax
+call	__PARNL
+add		sp,4
+
+Argument:
+
+Type: word <ORDER> is the placement order in the parameter list.
+Type: word <INDEX> is the array element to access.
+
+Description:
+
+This routine receives a Clipper number as a long and places the
+value in DX:AX.
+
+
+__RET
+
+Syntax Usage:
+
+call __RET
+
+Description:
+
+For "DO" routines that do not return values.
+
+
+
+__RETC
+
+Syntax Usage:
+
+mov 	<register1>,<expN1>
+mov 	<register2>,<expN2>
+push 	<register1>
+push 	<register2>
+call	__RETC
+add		sp,4
+
+Arguments:
+
+<expN1> is the segment address of string.
+
+<expN2> is the offset address of string.
+
+Description:
+
+__RETC passes back to Clipper a character string pointed to by
+<register1> and <register2>.
+
+
+
+__RETDS
+
+Syntax Usage:
+
+mov		<register1>,<expN1>
+mov		<register2>,<expN2>
+push	<register1>
+push	<register2>
+call	__RETDS
+add		sp,4
+
+Argument:
+
+<expN1> is the segment address of date string.
+
+<expN2> is the offset address of date string.
+
+Description:
+
+__RETDS passes back to a Clipper date a string in the form
+YYYYMMDD.
+
+
+
+__RETL
+
+Syntax Usage:
+
+mov		<register1>,<expN>
+push	<register1>
+call	__RETNL
+add		sp,2
+
+Argument:
+
+<expN> is the value to return to a Clipper logical value where 0
+is false (.F.) and 1 is true (.T.).
+
+Description: 
+
+Passes back to Clipper a word value as a logical value.
+
+
+
+__RETND
+
+Syntax Usage:
+
+mov 	<register1>,<expN1>
+mov		<register2>,< ?    >
+mov		<register3>,< ?    >
+mov		<register4>,< ?    >
+push	<register1>
+push	<register2>
+push	<register3>
+push	<register4>
+call	__RETND
+add		sp,8
+
+Arguments:
+
+<expN1> is the value to return to Clipper.
+
+Description:
+
+__RETND passes back to a Clipper a double precision number to
+numeric.
+
+
+
+__RETNI
+
+Syntax Usage:
+
+mov		<register1>,<expN1>
+push	<register1>
+call	__RETNI
+add		sp,2
+
+Argument:
+
+<expN1> is the value to be return as an int.
+
+Description:
+
+__RETNI passes back to Clipper a number stored in
+<register1> as a numeric.
+
+
+
+__RETNL
+
+Syntax Usage:
+
+mov 	<register1>,<expN1>
+mov		<register2>,< ?   >
+push	<register1>
+push	<register2>
+call	__RETNL
+add		sp,4
+
+Argument:
+
+<expN1> is the long value to return to Clipper.
+
+Description:
+
+__RETNL passes back to Clipper a long integer stored in the
+register pair <register1>:<register2> to a numeric.
+
+
+
+SUMMARY OF CHANGES FROM AUTUMN '86
+----------------------------------
+
+This section briefly summarizes the differences between the
+Autumn '86 version of Clipper and the Summer '87 version for
+both the C and Assembler Extend System interfaces.
+ 
+The C Interface
+ 
+1. C extend functions must now be defined using the CLIPPER macro
+   or declaring the function "void pascal."  For example:
+ 
+Autumn '86:
+	
+	c_routine() {
+ 
+ 			   }
+ 
+ Summer '87:
+
+	CLIPPER c_routine() {
+ 
+ 			   }
+ 
+ 2. Extend functions must all now be preceded with an underscore
+    (_) character.  For example:
+ 
+ 
+ 	Autumn '86:
+				parni(1)
+                parinfa(2, 1)
+                ret()
+ 	
+ 
+ 	Summer '87:
+				_parni(1)
+                _parinfa(2, 1)
+                _ret()
+ 
+ The Assembler Interface
+ 
+ 1. Refernces to Extend functions must now be preceded with an
+    extra underscore (_) character.
+ 
+ 
+ 	Autumn '86:   call _PARNI
+                  call _PARC
+                  call _RETNI
+                  call _RET
+ 
+ 	Summer '87:  call __PARNI
+                 call __PARC
+                 call __RETNI
+                 call __RET
+ 
+ 
+ 2. For some of the __PAR functions, the receiving registers have
+    changed and how they're received have also changed.
+ 
+    __PARC
+ 
+    	Autumn '86: Received parameter in AX:BX (segment:offset) by
+       reference.
+ 
+    	Summer '87: Receives the pased parameter in DX:AX
+       (segment:offset) by reference.
+ 
+ 
+    __PARNL
+ 
+    	Autumn '86: Received parameter in AX:BX passed by value.
+ 
+    	Summer '87: Receives parameter in DX:AX passed by value.
+ 
+ 
+    __PARND
+ 
+    	Autumn '86: Received parameter in AX:BX:CX:DX passed by
+       value.
+ 
+    	Summer '87: Receives parameter in DX:AX (segment:offset)
+       passed by reference.
+ 
+ 
+    __PARDS
+ 
+    	Autumn '86: Received parameter in AX:BX (segment:offset)
+       passed by reference.
+ 
+    	Summer '87: Receives parameter in DX:AX (segment:offset)
+       passed by reference.
+ 
+ 
+ Note: Some of the macros in EXTENDA.MAC have also changed.  If
+ you INCLUDE this file, please examine the changes first.
+ 
+

@@ -1,0 +1,166 @@
+NEW ARRAY HANDLING FUNCTIONS
+----------------------------
+
+These functions are written in C to make high speed array
+manipulation possible. To use them, include the file DBU.LIB
+in the list of libraries passed to the linker.
+
+
+******
+*
+*   AINS()
+*
+*   ARRAY INSERT
+*
+*   shift array elements up
+*
+******
+
+Syntax.......:  AINS(array, pos)
+
+    where....:  array  =  name of array
+                pos    =  target element for insertion
+
+Equivalent...:
+    i = LEN(array)
+
+    DO WHILE i > pos
+        array[i] = array[i - 1]
+        i = i - 1
+
+    ENDDO
+
+    array[pos] = <undefined element>
+
+Description..:
+  - array[pos] becomes an undefined element
+  - all elements from array[pos] to array[LEN(array)]
+        will be shifted up one element
+  - the last element will be lost
+
+
+******
+*
+*   ADEL()
+*
+*   ARRAY DELETE
+*
+*   shift array elements down
+*
+******
+
+Syntax.......:  ADEL(array, pos)
+
+    where....:  array  =  name of array
+                pos    =  element to be deleted
+
+Equivalent...:
+    FOR i = pos TO LEN(array) - 1
+        array[i] = array[i + 1]
+
+    NEXT
+
+    array[LEN(array)] = <undefined element>
+
+Description..:
+  - the last element becomes an undefined element
+  - all elements from array[pos] to array[LEN(array)]
+        will be shifted down one element
+  - the contents of array[pos] will be lost
+
+
+******
+*
+*   AFILL()
+*
+*   ARRAY FILL
+*
+*   fill many array elements with one value
+*
+******
+
+Syntax.......:  AFILL(array, val [,start [,count]])
+
+    where....:  array  =  name of array
+                val    =  fill value
+                start  =  first element to fill..defaults to 1
+                count  =  number of elements to fill..defaults to all
+                          elements from "start" to last element
+
+Equivalent...:
+    FOR i = start TO start + count - 1
+        array[i] = val
+
+    NEXT
+
+Description..:
+  - all elements from array[start] to array[start + count - 1]
+        will be filled with the same value "val"
+  - "val" can be any valid expression of any data type
+
+
+******
+*
+*   ASCAN()
+*
+*   ARRAY SCAN
+*
+*   search for specific value within an array
+*
+******
+
+Syntax.......:  n = ASCAN(array, val [,start [,count]])
+
+    where....:  array  =  name of array
+                val    =  search value
+                start  =  first element to scan - defaults to 1
+                count  =  number of elements to fill..defaults to all
+                          elements from "start" to last element
+                n      =  first element number containing search value
+                          (zero if not found)
+
+Equivalent...:
+    FOR i = start TO start + count - 1
+        IF array[i] = val
+            RETURN(i)
+
+        ENDIF
+    NEXT
+
+    RETURN(0)
+
+Description..:
+  - all elements from array[start] to array[start + count - 1]
+        will be searched for a matching value "val"
+  - ASCAN is affected by the current state of SET EXACT on/OFF
+
+
+******
+*
+*   ADIR()
+*
+*   ARRAY DIRECTORY
+*
+*   fill array with filenames from disk directory
+*
+******
+
+Syntax.......:  n = ADIR(skeleton [,array])
+
+    where....:  skeleton  =  file pattern (eg. "*.*")
+                array     =  name of array to fill
+                n         =  number of matching files found
+
+Usage........:
+    DECLARE textfiles[ADIR("*.TXT")]    && declare just enough elements
+    ADIR("*.TXT", textfiles)            && fill the array with file names
+
+Description..:
+  - all matching filenames will be counted
+  - if included, elements of the optional array name will
+    be filled with one file name per element until all the
+    files have been found or all the elements have been used
+
+
+EOF AFUNC.DOC
+

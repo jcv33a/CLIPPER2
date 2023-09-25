@@ -1,0 +1,10 @@
+CLIPCOPY allows you to make an executable copy of CLIPPER in the 
+current directory of your hard disk.
+
+The syntax is:
+
+        A> CLIPCOPY <d>: 
+
+where <d>: is the drive you are copying to.  Detailed
+instructions are in chapter 2 of the Clipper Manual.
+

@@ -1,0 +1,12 @@
+FLOPCOPY allows you to make a working copy of CLIPPER for use
+on a machine with two 360K floppy drives.  You will need 3
+formatted diskettes.  If you need to prepare diskettes, press 
+Control-C to exit this batch file.
+
+The syntax is:
+
+        A> FLOPCOPY <d>: 
+
+where <d>: is the drive you are copying to.  Detailed
+instructions are in chapter 2 of the Clipper Manual.
+

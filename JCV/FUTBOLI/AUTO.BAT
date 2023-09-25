@@ -1,0 +1,4 @@
+ECHO OFF
+CD C:\
+CD FUTBOLI
+COPY *.* A:\

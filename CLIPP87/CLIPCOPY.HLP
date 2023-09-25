@@ -1,0 +1,14 @@
+CLIPCOPY installs CLIPPER in the current directory of your hard
+disk.
+
+The syntax is:
+
+        A> CLIPCOPY <d>: 
+
+where <d>: is the drive you are copying to.  Detailed
+instructions are in chapter 2 of the Clipper Manual.
+
+After installation, add \CLIPPER to your path.  This will allow
+you to compile and link your programs in other directories using
+the CL and CLD batch files.
+

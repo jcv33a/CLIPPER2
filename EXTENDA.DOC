@@ -1,0 +1,289 @@
+
+Passing Parameters to Assembly Language with the Extend System
+--------------------------------------------------------------
+There are 3 ways to access an Assembler subroutine in Clipper,
+as a FUNCTION, as a PROCEDURE, and as a CALL.  For example, if
+we have a routine that we need to pass four parameters p1, p2,
+p3 and p4 to, we could do one of the following:
+
+
+        1) as a FUNCTION (where value/s are returned to caller)
+
+                ? func(p1,p2,p3,p4)
+                X = func(p1,p2,p3,p4)
+
+        2) as a DO procedure (where no values are returned)
+
+                DO func WITH p1,p2,p3,p4
+
+                ***** Important:        
+                * These procedures must be declared 
+                * as EXTERNAL in the Clipper programme.
+
+        3) or as a CALL routine
+
+                CALL func WITH p1,p2,p3,p4
+
+
+We will only discuss the first 2 methods.  Although the third
+way does work properly, it is not recommended.  The construct
+for Assembler routines to be used for the FUNCTIONs and the DO
+<procedure> WITH... are basically the same.  The only big
+difference, in fact, is in the use of the "_RET..." statements.
+
+CLIPPER to ASSEMBLY
+-------------------
+Clipper has a built in set of functions for passing and
+returning parameters to assembly language and 'C' routines.  The
+functions that begin with "_PAR" are used to get parameters.
+When writing assembly routines for use with Clipper, it is
+important to keep in mind that Clipper is written in C and that
+all parameters are passed as C data types.  Below is a list of
+the data types available in Clipper, how they are handled in C,
+which function should be used to pass that type, and which
+registers the value is passed in.
+
+Clipper type |  C type     | Function     | CPU registers
+------------------------------------------------------------------
+char         | char *      | _PARC        | AX:BX (segment:offset)
+date         | char *      | _PARDS       | AX:BX (segment:offset)
+numeric      | int         | _PARNI       | AX
+numeric      | long        | _PARNL       | AX:BX
+numeric      | double      | _PARND       | AX:BX:CX:DX
+logical      | int         | _PARL        | AX
+------------------------------------------------------------------
+
+Note that only C character types are passed as addresses of the
+parameter.  All other types are passed by value in registers.
+The address passed for character strings points to a duplicate
+of the string your Clipper program uses.  Changing this
+duplicate will not affect the original.  Use _RETC to pass a
+changed string back to Clipper.  All strings must be null
+terminated.  Also note that these functions only preserve the
+SP, BP, DS, SS, CS, and, IP registers.
+
+When using the _PAR functins, follow the pseudo sequence below:
+
+        1 - Move the parameter number to be passed into AX
+        2 - Push AX
+        3 - Call the appropriate "_PAR..." for that type 
+        4 - The parameter is received in registers, either by
+             value or by pointer.
+        5 - Restore the stack
+        
+
+There is an additional function _PARINFO that is used to find
+out how many parameters have been passed and the type of each
+one.   The number of parameters is returned in the AX register
+when a zero is placed on the stack before CALLing _PARINFO.  For
+example:
+
+          XOR       AX,AX               ;Zero AX
+          PUSH      AX                  ;Place on stack
+          CALL      _PARINFO            ;Get count in AX
+          ADD       SP,2                ;Fix up stack
+
+The type of each parameter is available by placing the parameter
+number on the stack and again CALLing _PARINFO.  The type is
+returned in the AX register.  The following equates show the
+value returned for each type.
+
+UNDEF     EQU   0
+CHARACTER EQU   1
+NUMERIC   EQU   2
+LOGICAL   EQU   4
+DATE      EQU   8
+ALIAS     EQU   16
+
+To get the type of the Nth parameter:
+
+          MOV       AX,N                ;Place parameter number
+          PUSH      AX                  ;on the stack
+          CALL      _PARINFO            ;Get type in AX
+          ADD       SP,2                ;Fix up stack
+
+
+ASSEMBLY back to CLIPPER
+------------------------
+There is also a set of functions that begins with "_RET" for
+returning values to your Clipper programs.  Here is a chart,
+corresponding to the one above.  Notice that the address of the
+return string is placed on the stack for char types and that the
+value to be returned is placed on the stack for numerics.  Since
+the DO <procedure> WITH... does not return any values, it can
+only use the _RET function.
+
+Clipper type |  C type     | Function     | PUSH on stack
+------------------------------------------------------------------
+char         | char *      | _RETC        | (segment:offset)
+date         | char *      | _RETDS       | (segment:offset)
+numeric      | int         | _RETNI       | 1 register
+numeric      | long        | _RETNL       | 2 registers
+numeric      | double      | _RETND       | 4 registers
+logical      | int         | _RETL        | 1 register
+------------------------------------------------------------------
+
+The BP, DS, and ES registers must always be saved upon entry to
+your assembly language routine.  Before calling these functions,
+always restore BP, DS, and, ES.  After calling the function,
+always fix up the stack.  Failure to restore the environment
+this way will usually hang the machine.
+
+The following is a shell of a routine to get and return a
+character value.  Note that all the functions CALLed must be
+declared as external or the assembler will return an error message.
+
+          PUBLIC    <function>
+
+;Declare the Clipper calls as external and far
+         EXTRN    _PARC:FAR
+         EXTRN    _RETC:FAR
+
+CODESEG   SEGMENT   BYTE 'CODE'
+          ASSUME    CS:CODESEG
+
+<function> PROC     FAR
+           PUSH     BP                  ;Save registers
+           MOV      BP,SP
+           PUSH     DS
+           PUSH     ES
+
+;Get a pointer to a string
+           MOV      AX,1                ;Get parameter 1 by
+           PUSH     AX                  ;putting 1 on the stack
+           CALL     _PARC               ;Put seg:off in AX:BX
+           ADD      SP,2                ;Fix up stack
+
+;*** Your code goes here ***
+
+;Return pointer to Clipper
+;   Registers must be restored before calling return function.
+          POP       ES
+          POP       DS
+          POP       BP
+
+;   Place the string address on top of stack.
+          PUSH      AX                  ;Assumes segment in AX
+          PUSH      BX                  ;and offset in BX
+
+;Return value and go back to Clipper
+          CALL      _RETC               ;Return character type
+          ADD       SP,4                ;Fix up stack
+          RET   
+<function> ENDP
+CODESEG ENDS
+          END       <function>
+
+
+Here is a function that takes a string as a parameter and
+returns the string in reverse order.
+
+;Function...:TURN.ASM
+;Syntax.....:? TURN(<expC>)
+;Note.......:reverses the order of the string passed
+;            can only process a MAX of 60 characters
+;
+public  TURN            ; this public statement makes this
+;                       ; routine accessible to the 'public'
+;
+extrn   _PARC:far       ; Clipper's character 'getter'
+extrn   _RETC:far       ; Clipper's character 'returner'
+;
+;
+DGROUP  GROUP   datasg  ; Clipper's Data Segment
+
+; the 'public' in the next statement combines the datasg
+; to Clipper's DGROUP group
+datasg  segment public  'DATA'
+
+RETVAL  db      60 dup(" ")     ; init with 60 spaces
+VAL1    dw      0               ; init with 0
+VAL2    dw      0               ; init with 0
+
+datasg  ends                    ; end of datasg (in DGROUP)
+;
+;
+_prog   segment
+        assume  cs:_prog,ds:DGROUP,es:DGROUP
+
+TURN    proc    far             ; far process
+        push    bp              ; preserve return address
+        mov     bp,sp           ; move stack pointer
+                
+        mov     ax,1            ; get first para
+        push    ax              ; push AX
+        call    _PARC           ; call Chara "getter"
+        add     sp,2            ; restore stack
+        mov     VAL1,bx         ; get OFFSET address 
+        mov     VAL2,ax         ; get SEGMENT address 
+
+        push    ds              ; preserve DS
+        push    es              ; preserve ES
+
+        cld                     ; clear direction flag (L-R)
+        mov     di,offset DGROUP:RETVAL ; get RETVAL's offset
+                                        ; from DGROUP
+        mov     ax,DGROUP       ; get DGROUP segment
+        mov     es,ax           ; and place in ES
+
+; in the next three statements, the order that it appears is
+; important because the values of SI & AX must first be taken 
+; from the DATASG extension before assigning the DGROUP segment
+; address to DS
+
+        mov     si,VAL1
+        mov     ax,VAL2
+        mov     ds,ax
+                                
+        
+        xor     ax,ax           ; zero out AX
+        mov     al,[si]         ; move first SI value to AL
+        cmp     al,0            ; if NUL (zero)
+        jz      C3              ; jump to C3
+
+        mov     cx,3ch          ; set CX for max 60 loops
+        xor     bx,bx           ; zero-out BX
+        xor     ax,ax           ; zero-out AX
+
+A1:     mov     al,[si]         ; move SI value to AL
+        cmp     al,0            ; compare with zero
+        jz      A2              ; if zero, jump to A2:
+        inc     si              ; increment SI
+        inc     bx              ; increment BX
+        loop    A1              ; loop to A1:
+
+A2:     dec     si              ; decrement SI
+        mov     cx,bx           ; move BX to CX
+        xor     ax,ax           ; zero-out AX
+
+A3:     mov     al,[si]         ; move  SI val to AL
+        mov     es:[di],al      ; move  AL to DI
+        dec     si              ; decrement SI
+        inc     di              ; increment DI
+        loop    A3              ; loop
+        
+C3:     xor     ax,ax           ; zero-out AX
+        mov     es:[di],al      ; add null terminator to end
+                                ; of RETVAL
+
+        pop     es              ; restore
+        pop     ds              ; restore
+
+        pop     bp              ; restore
+
+        mov     ax,DGROUP       ; get DGROUP address
+        mov     ds,ax           ; assign to DS
+        push    ds              ; push segment address
+        mov     ax,offset DGROUP:RETVAL ; get RETVAL's offset
+        push    ax              ; push offset address
+        call    _RETC           ; Clipper's  "returner"
+        pop     ax              ; restore
+        pop     ds              ; restore
+
+        ret                     ; actual ret to caller
+TURN    endp                    ; end of process
+
+_prog   ends                    ; end of segment
+        end                     ; end of program
+
+

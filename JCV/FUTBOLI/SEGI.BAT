@@ -1,0 +1,4 @@
+ECHO OFF
+CD \FUTBOLI
+COPY *.DBF A:\
+CD \

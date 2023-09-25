@@ -1,0 +1,1983 @@
+ADDENDUM TO THE Clipper MANUAL
+------------------------------
+This document describes changes made to the Clipper
+Summer '87 manual since it was printed.  Topics include:
+
+	Changes made to existing commands and functions
+	since the documentation was printed.
+
+	Reference entries for commands and functions added to
+	Clipper since the documentation was printed.
+
+	Command and function reference entries missing from the
+	original documentation.  These are commands and functions whose
+	status was unclear when the documentation was printed and so were
+	not included.
+
+
+
+
+ALTERED COMMANDS 
+----------------
+
+*** CLEAR SCREEN 
+
+SCREEN is now an optional clause that suppresses the
+automatic clearing of GETs when the screen is CLEARed.
+
+
+
+*** IF 
+
+Syntax:	IF...ELSEIF...ELSE...ENDIF
+
+The ELSEIF clause has been added to the IF control
+structure allowing you to test more than one case within the same
+IF...ENDIF.  This means that the IF control structure now is
+effectively the same as the DO CASE control structure.  The IF
+statement is analogous to the first CASE statement, ELSEIF is
+analogous to a subsequent CASE statement, and ELSE is analogous
+to the OTHERWISE statement.  For example, the following is the
+example from the DO CASE command in Chapter 5 with the CASE
+structure replaced with an IF structure using ELSEIF:
+
+* Display menu choices.
+CLEAR
+@ 3, 25 PROMPT "1. First choice" 
+@ 4, 25 PROMPT "2. Second choice"
+@ 5, 25 PROMPT "Quit"
+
+* Get menu key.
+MENU TO choice
+
+* Perform an action based on your menu choice.
+IF (choice % 3) = 0
+	RETURN
+ELSEIF choice = 1
+	DO One
+ELSEIF choice = 2
+	DO Two
+ENDIF
+RETURN
+
+
+
+
+***   PUBLIC/PRIVATE Arrays
+
+Arrays can now be declared PUBLIC.  For example, the following
+statement declares a PUBLIC array of 20 elements:
+
+PUBLIC arr[20], var1, var2
+
+In addition to declaring PUBLIC arrays, you can now declare
+private arrays using the PRIVATE statement as well as DECLARE.
+As an example, the following declares two arrays and three other
+variables PRIVATE:
+
+PRIVATE array1[10], array2[20], var1, var2, var3
+
+Declaring an array PRIVATE works exactly the same as declaring
+any other memory variable PRIVATE; a PUBLIC or private array
+created in higher-level procedure having the same name is hidden
+and a new array definition is created.  The scope of the new
+definition is always the current procedure.  You may also want
+to note that DECLARE has always acted the same as PRIVATE hiding
+any array of the same name created in a higher-level procedure.
+The advantage of PRIVATE is that you can mix declarations of
+arrays with memory variables of other types.
+
+
+
+*** SET RELATION 
+
+Syntax:	SET RELATION [ADDITIVE]
+
+The ADDITIVE clause has been added to SET RELATION TO. 
+This additional clause allows you to add relations to the current
+set of relations defined in the current work area.  For example:
+
+* Define first set of relations.
+USE Customer INDEX Customer
+SELECT 2
+USE Invoices INDEX Invoices
+SELECT 1
+SET RELATION TO Cust_num INTO Invoices
+.
+.
+.
+* Sometime later, add a new child relation.
+SELECT 3
+USE BackOrder INDEX BackOrder
+SELECT 1
+SET RELATION ADDITIVE TO Cust_num INTO BackOrder
+
+
+
+
+ALTERED FUNCTIONS 
+-----------------
+
+***  IF()  
+
+The IF() function now only executes the path pointed to
+by the result of the <expL>.  This means that undefined or
+erroneous items in the non-executed path are not evaluated.  For
+example:
+
+IF(.F., "Bad" + 12, "Good")
+
+does not generate a runtime error for the expression
+"Bad" + 12 since it is never evaluated.
+
+
+
+***  MEMOEDIT()
+
+Syntax:	MEMOEDIT(<expC1>, [<expN1>, <expN2>, <expN3>,
+		<expN4>] [,<expL1>] [,<expC2>] [,<expN5>] 
+		[,<expN6>] [,<expN7>] [,<expN8>]) [,<expN9>] [,<expN10>])
+
+Purpose:	To display or edit character strings and memo fields.
+
+Arguments:	
+
+<expC> is the character string or memo field to edit.
+
+<expN1>, <expN2>, <expN3>, <expN4> define the
+edit window coordinates in the following order: top, left,
+bottom, and right.  If omitted, the entire screen is used.
+
+<expL1> determines whether a memo is edited or simply
+displayed.  If you specify true (.T.), the memo is displayed and
+you enter the edit mode.  If you specify false (.F.), you are
+placed in the browse mode where the memo is simply displayed. 
+The default is true (.T.).
+
+<expC2> is the name of a user function (a Clipper
+user-defined function) to execute whenever a key is pressed. 
+Specify the function name without both the parenthetical suffix
+and arguments.  Refer to the discussion below for more
+information. 
+
+<expN5> determines the line length.  If <expN5> is
+greater than width of the window (<expN4> - <expN2> - 1), the
+window scrolls horizontally.  The default is (<expN4> -
+<expN2> - l).
+
+<expN6> determines the tab size and enables real
+tabs.  The default is four.
+
+<expN7> is the intial line of the memo to place the
+cursor.
+
+<expN8> is the intial column of the memo to place the
+cursor.
+
+<expN9> is the intial row to place the cursor relative
+to the window position.  The default is zero.
+
+<expN10> is the initial column to place the cursor
+relative to the window position.  The default is zero.
+
+All arguments are optional.  You must, however, pass a
+dummy argument for any argument you wish to skip.
+
+Returns:	A character string.
+
+MEMOEDIT() returns the modified string if it is terminated with
+Ctrl-W or the orginal if terminated with Esc.
+
+Usage:
+
+MEMOEDIT() is a general purpose text editing function you can use
+in your applications for a variety of purposes. It supports a
+number of different modes and includes a user function to allow
+key reconfiguration and programming of other activites germane
+to the current text editing task.
+
+The following are the keys active within MEMOEDIT():
+
+			MEMOEDIT() Navigation Keys
+
+Key								Purpose
+-------------------------------------------------------
+Uparrow or Ctrl-E				Move up one line 
+Dnarrow or Ctrl-X				Move down one line. 
+Leftarrow or Ctrl-S				Move left one character 
+Rightarrow or Ctrl-D			Move right one character 
+Ctrl-Leftarrow or Ctrl-A		Move left one word 
+Ctrl-Rightarrow or Ctrl-F		Move right one word 
+Home							Beginning of current line 
+End								End of current line 
+Ctrl-Home						Beginning of the memo 
+Ctrl-End						End of the memo 
+PgUp							Next edit window up 
+PgDn							Next edit window down 
+Ctrl-PgUp						Beginning of current window 
+Ctrl-PgDn						End of current window
+
+
+            MEMOEDIT() Editing Keys
+
+Key								Purpose
+-------------------------------------------------------
+Ctrl-Y							Delete the current line
+Ctrl-T							Delete word right
+Ctrl-B							Reformat memo in the edit window
+
+
+			MEMOEDIT() Escape Keys
+
+Key								Purpose
+-------------------------------------------------------
+Ctrl-W							Finish editing with save
+Esc 							Abort edit and return original
+
+
+
+Browse/Update modes:  
+
+MEMOEDIT() supports two display modes depending on the value of
+<expL1>.  If <expL1> is true (.T.), MEMOEDIT() enters update
+(edit) mode; otherwise, MEMOEDIT() enters browse (display) mode.
+In the browse mode, all navigation keys are active and perform
+the same actions as update mode with one exception.  In update
+mode, the scroll state is off and Uparrow and Dnarrow move the
+cursor up or down one line.  In browse mode, the scroll state is
+on and Uparrow and Dnarrow scroll the contents of the MEMOEDIT()
+window up or down one line.
+
+Note that browse mode in Autumn '86 did not allow cursor
+movement.  If you wish to retain this behavior, add a user
+function argument for the following function:
+
+FUNCTION NoBrowse
+*
+KEYBOARD CHR(27)
+RETURN 0
+
+When MEMOEDIT() executes, it automatically calls the user
+function (as explained below) which in this case immediately
+terminates MEMOEDIT().  Follow the MEMOEDIT() call with INKEY(0)
+to pause the display.
+
+User function:
+
+When MEMOEDIT() calls the user function, it automatically passes
+three parameters, "mode," "line," and "col."  The mode indicates
+the current state of MEMOEDIT() depending on the last key
+pressed or the last action taken by prior to executing the user
+function.  The following are the possible mode values:
+
+			MEMOEDIT() Modes
+
+Mode	Description
+-------------------
+0		Idle
+1		Re-configurable or unknown keystroke
+		(memo unaltered)
+2		Re-configurable or unknown keystroke
+		(memo altered)
+3		Startup
+
+Mode 3 is the start-up mode.  When you specify a user function,
+MEMOEDIT() makes a call to it immediately after being invoked.
+At this point, you RETURN a code to configure MEMOEDIT()'s
+various toggle states: word-wrap, scroll, or insert.  MEMOEDIT()
+calls the user function repeatedly, remaining in the start-up
+mode until you RETURN 0.  The memo is then displayed and you
+enter the display mode set by <expL1>.
+
+Modes 0, 1, and 2 are used to process keys.  The idle mode (mode
+0) is called once when there is no pending key to process.
+Within this mode, you generally update line and column number
+displays.  MEMOEDIT() calls the user function whenever a key
+exception occurs.  Keys that instigate a key exception are all
+available control keys, function keys, and Alt keys.  Since
+thses keys are not processed by MEMOEDIT(), when you have a user
+function, they can all be re-configured.
+
+The other two parameters "line" and "col" indicate the current
+cursor position in the MEMOEDIT() window when the user function
+is called.  The "line" parameter begins with position one and
+"col" begins with position zero.
+
+When the mode is either 1, 2, or 3, you can return a value
+instructing MEMOEDIT() what action to perform next.  The
+following table summarizes the possible return values and thier
+consequences:
+
+			MEMOEDIT() User Function Return Codes
+
+Value	Action
+--------------
+0		Perform default action
+1 - 31	Perform requested action corresponding to key value
+		(e.g. 22 = Ctrl-V = Ins = toggle insert mode)
+
+32		Ignore the current key (disable)
+33		Process the current key as data (insert control key)
+34		Toggle word-wrap
+35		Toggle scrolling
+
+The following exceptions resolve key value collisions:
+
+100		Next word (2 = Ctrl-B = reform)
+101		Bottom right of window (23 = Ctrl-W = save and exit)
+
+Note that cursor keys, Return, Backspace, Tab, Del, and all
+character keys cannot be disabled.
+
+Word-wrapping
+
+Word-wrapping is a state you toggle by RETURNing a 34 from the
+user function.  The default is on.  When word-wrap is on,
+MEMOEDIT() inserts a soft carriage return/line feed at the
+closest word break to the window border or line length which
+ever occurs first.  When word-wrap is off, MEMOEDIT() scrolls
+text entry beyond the window definition until you reach the
+end-of-line.  At this point, you must press Return (inserting a
+hard carriage return/line feed) to advance to the next line.
+
+Note that soft carriage returns may interfere with the result of
+display commands such as ? and REPORT FORM or processing with
+another word processor.  Use HARDCR() and MEMOTRAN() to replace
+these embedded characters as needed.
+
+Paragraph reform
+
+Pressing Ctrl-B or RETURNing a 2 from a user function reformats
+until a hard carriage (end-of-paragraph) or end-of-memo
+regardless of whether word-wrap is on or off.
+
+Tab Characters
+
+When you specify the tab size argument (<expN6>), MEMOEDIT()
+inserts a hard tab characters (09H) in the text when Tab is
+pressed.  If the tab size argument has not been specified,
+MEMOEDIT() inserts space characters instead.  The size of tabs
+is global for the entire memo and set with <expN6>.  The default
+is four.
+
+Note that MEMOEDIT() does not convert tab characters to spaces
+if real tabs are on.
+
+Examples:	See ME.PRG and README.PRG
+
+To display a memo field without editing:
+
+MEMOEDIT(Memo, 5, 10, 20, 69, .F.)
+INKEY(0)
+
+To display the same memo field without editing but
+including scrolling:
+
+MEMOEDIT(Memo, 5, 10, 20, 69, .F., .T.)
+INKEY(0)
+
+To edit the current memo field:
+
+REPLACE Memo WITH MEMOEDIT(Memo, 5, 10, 20, 69, .T.)
+
+To edit a character string using the full screen:
+
+note = SPACE(1)
+note = MEMOEDIT(note)
+
+This example demonstrates a user-defined function that
+edits a memo field in a box with a title:
+
+FUNCTION EditMemo
+PARAMETERS memo, title, tr, tc, br, bc 
+PRIVATE temp_scr
+SAVE SCREEN TO temp_scr
+@ tr - 1, tc - 2 CLEAR TO br + 1, bc + 2
+@ tr - 1, tc - 2 TO br + 1, bc + 2
+@ tr - 1, tc SAY "[" + title + "]"
+var  = MEMOEDIT(memo, tr, tc, br, bc, .T.)
+RESTORE SCREEN FROM temp_scr
+RETURN (var)
+
+Library:	EXTEND.LIB
+
+See also:
+
+ACHOICE(), DBEDIT(), HARDCR(), MEMOLINE(),
+MEMOREAD(), MEMOTRAN(), MEMOWRIT(), MLCOUNT()
+
+
+
+
+***  SELECT()
+
+In addition to returning work area number of the current work
+area, SELECT() can now check for the existence of an alias. 
+SELECT() does this by taking the alias as an optional argument of
+character type and returning the work area number as integer
+numeric value.  If the alias does not exist, SELECT() returns
+zero.  For example:
+
+SELECT 1
+USE Sales 
+.
+.
+.
+ACCEPT "Enter database filename: " TO dbf_file
+IF SELECT(dbf_file) != 0
+	SELECT 0
+	USE dbf_file
+ELSE
+	? "File is currently open"
+ENDIF
+
+
+***  TYPE()
+
+Syntax:	TYPE(<expC>)
+
+Purpose:	To return the type of the specified character
+			expression.
+
+Argument:	<expC> is an expression that evaluates to an
+expression to type.  This can include a field (including the
+alias), a memory variable, or an expression of any type.
+
+
+
+Returns:	TYPE() returns one of the following characters:
+
+	Returns		Meaning
+    -------------------
+    C			Character
+	D			Date
+	L			Logical
+	N			Numeric
+	M			Memo field
+	A			Array
+	U			Undefined
+	UE error (Syntactical)
+	UI error Indeterminate
+
+
+Usage:
+
+TYPE() returns the type of the specified expressions. 
+Its expanded capabilities can be used to test expression
+validity.  There are, however, several special cases as follows:
+
+Array references:  References to DECLAREd arrays
+return an "A."  References to array elements return the type of
+the element.  Invalid references return "U."
+
+IF()/IIF():  In order the return the appropriate
+data type for an IF(), TYPE() evaluates the condition and then
+returns the type of the evaluated path.  If either the IF()
+condition or the evaluated path are invalid, TYPE() returns "UE."
+
+User-defined and EXTEND.LIB functions:  If a
+reference is made anywhere in expression to function not found in
+CLIPPER.LIB (user-defined or EXTEND.LIB functions), TYPE()
+returns a "UI."
+
+Examples:
+
+? TYPE("Alias_name->Fldvar")
+? TYPE([SUBSTR("Hi There", 4, 5)])   	&& Result: C
+? TYPE([UDF()])                    		&& Result: UI
+? TYPE([IF(.T., "true", 12)])   		&& Result: C
+
+Library:	CLIPPER.LIB 
+
+
+
+NEW FUNCTIONS 
+-------------
+
+*** ALTD()
+
+Syntax:	ALTD([<expN>])
+
+Purpose:	To execute the debugger or enable/disable the use of
+		Alt-D to invoke it.
+
+Argument: <expN> sets the Alt-D invocation mode as follows:
+
+			0	Disables
+			1	Enables
+			2	Error
+
+Returns:	There is no return value.
+
+Usage:	If there is no argument specified, the debugger is
+		invoked displaying the last screen displayed. 
+		Specifying 3 as the argument invokes the debugger
+		displaying the Variables:View Privates screen.
+
+Library:	CLIPPER.LIB
+
+See also:	SETCANCEL(), SET ESCAPE
+
+
+
+***  DBFILTER() 
+
+Syntax:	DBFILTER()
+
+Purpose:
+
+To determine the expression of the FILTER SET in the current
+work area.
+
+Returns:	A character string.
+
+DBFILTER() returns as a character string the filter condition
+defined in the current work area.  If no FILTER has been SET,
+DBFILTER() returns a null string ("").
+
+Example:
+
+The following user-defined function, CreateQry(), uses
+DBFILTER() to create a memory file containing the current filter
+expression in the memory variable "qry_string."  The memory file
+is named with the extension "qwy" to indicate that it contains a
+query.
+
+FUNCTION CreateQry
+PARAMETERS qry_name, alias
+*
+IF PCOUNT() < 2
+	qry_string = DBFILTER()
+ELSE
+	qry_string = &alias.->(DBFILTER())
+ENDIF
+SAVE ALL LIKE qry_string TO &qry_name..qwy
+RETURN ""
+
+Then sometime later, you can RESTORE a query file created by
+CreateQry() with the following user-defined function,
+SetFilter().  This function RESTORES the query file and then
+SETs FILTER TO the condition stored in the variable
+"qry_string."
+
+FUNCTION SetFilter
+PARAMETERS qry_name
+*
+RESTORE FROM &qry_name..qwy ADDITIVE
+SET FILTER TO &qry_string.
+RETURN ""
+
+Library:	CLIPPER.LIB
+
+See also:	DBRELATION, DBRSELECT(), SET FILTER
+
+
+
+***  DBRELATION() 
+
+Syntax:	DBRELATION(<expN>)
+
+Purpose:	To determine the linking expression of a specified
+			relation in the current work area.
+
+Argument:
+
+<expN> is the ordinal position in the list of relations defined
+in the current work area.
+
+Returns:	A character string.
+
+DBRELATION() returns a character string containing the relation
+expression of the relation pointed to by <expN>.  If there is no
+RELATION SET for <expN>, DBRELATION() returns a null string
+("").
+
+Usage:
+
+DBRELATION() is used in combination with DBRSELECT() to to query
+the linking expression and work area of an existing relation.
+Using these functions in addition to DBFILTER(), you can create
+a user-defined View system analgous that of dBASE III PLUS and
+the Clipper utility, DBU.EXE.  Essentially, you utilize these
+functions to create the View definition from the environment.
+
+Example:
+
+USE Customer INDEX Customer
+SELECT 2
+USE Invoices INDEX Invoices
+SELECT 3
+USE BackOrder INDEX BackOrder
+SELECT 1
+SET RELATION TO Cust_num INTO Customer;
+				 TO Cust_num INTO BackOrder
+*
+? DBRELATION(2)			&& Result: Cust_num
+
+Library:	CLIPPER.LIB
+
+See also:	DBFILTER(), DBRSELECT(), SET RELATION 
+
+
+
+***  DBRSELECT()
+
+Syntax:	DBRSELECT(<expN>)
+
+Purpose:
+
+To determine the target work area of a specified relation
+defined in the current work area.
+
+Argument:
+
+<expN> is the ordinal position in the list of relations defined
+in the current work area.
+
+Returns:	A integer numeric value.
+
+DBRSELECT() returns the work area of the relation pointed to by
+<expN>.  If there is no RELATION SET for <expN>, DBRSELECT()
+returns zero.
+
+Usage:
+
+DBRSELECT() is used in combination with DBRELATION() to query
+the work area and linking expression of an existing relation.
+Using these functions along with DBFILTER(), you can create a
+user-defined View system analogous that of dBASE III PLUS and
+the Clipper utility, DBU.EXE.  Essentially, you utilize these
+functions to create the View definition from the environment.
+
+Since the work area number is environment specific information,
+you may want the alias name if your application independent of a
+specific work area.  In this case use the expression to obtain
+the alias of the relation:
+
+ALIAS(DBRSELECT(<expN>)
+
+Example:
+
+USE Customer INDEX Customer
+SELECT 2
+USE Invoices INDEX Invoices
+SELECT 3
+USE BackOrder INDEX BackOrder
+SELECT 1
+SET RELATION TO Cust_num INTO Customer;
+		   TO Cust_num INTO BackOrder
+*
+? DBRELATION(2)			&& Result: Cust_num
+? DBRSELECT(2)				&& Result: 3
+? ALIAS(DBRSELECT(2))		&& Result: BACKORDER
+
+Library:	CLIPPER.LIB
+
+See also:	SET RELATION, DBFILTER(), DBRELATION()
+
+
+
+*** DOSERROR()
+
+Syntax: 	DOSERROR()
+
+Purpose:	To determine the last DOS error number.
+
+Returns:	An integer numeric value.
+
+Usage:	DOSERROR() is used in combination with the error
+		function Misc_error() and a "RUN error" to determine
+		whether the error was cause by not enough memory or
+		COMMAND.COM could not be located.
+
+Library:	CLIPPER.LIB
+
+See also:	FERROR()
+
+
+
+***  ERRORLEVEL() 
+
+Syntax:	ERRORLEVEL([<expN>])
+
+Purpose:
+
+To return the current DOS error level setting and optionally set
+the DOS error level to a new value.
+
+Argument:
+
+<expN> is the new DOS error level setting.  This can be a value
+between zero and 255.
+
+Returns:	An integer numeric value.
+
+ERRORLEVEL() returns the current DOS error level setting.
+
+Usage:
+
+ERRORLEVEL() is primarily used with SWITCH.EXE in order to chain
+execution of application programs.  As an example, assume you
+have a main application program called HELLO.EXE, and depending
+on some condition needs to execute another .EXE file (ONE.EXE,
+TWO.EXE, or THREE.EXE).  You can do this by setting the error
+level just before exiting to DOS as follows:
+
+DO CASE
+CASE choice = "ONE"
+	err_lev = 1
+CASE choice = "TWO"
+	err_lev = 2
+CASE choice = "THREE"
+	err_lev = 3
+ENDCASE
+ERRORLEVEL(err_lev)			&& Set error level.
+QUIT
+
+You then execute SWITCH from the DOS prompt specifying the list
+of executable application programs corresponding to error levels
+specified in the shell program.  For example:
+
+C>SWITCH HELLO ONE TWO THREE         
+
+Example:
+
+error_level = ERRORLEVEL()		&& Get current error level.
+ERRORLEVEL(1)					&& Set new error level.
+
+Library:	CLIPPER.LIB
+
+
+
+***  READEXIT() 
+
+Syntax:	READEXIT([<expL>])
+
+Purpose:
+
+To toggle the Uparrow and Dnarrow keys as READ exit keys.
+
+
+Argument:
+
+<expL> toggles the Uparrow or Dnarrow keys as exit keys for a
+READ.  Setting READEXIT() true (.T.) activates them as exit
+keys, false (.F.) deactivates them.  The default Clipper setting
+is false (.F.)
+
+Returns:	A logical value.
+
+READEXIT() returns the current setting prior toggling to a new
+setting.
+
+Examples:
+
+var = SPACE(10)
+READEXIT(.T.)
+@ 10,10 SAY "Enter: " GET var
+READ
+READEXIT(.F.)
+
+Library:	CLIPPER.LIB
+
+See also:	@...SAY...GET, READ, READINSERT()
+
+
+
+
+***  READINSERT() 
+
+Syntax:	READINSERT([<expL>])
+
+Purpose:
+
+To report the current insert mode setting for READ and
+MEMOEDIT() and optionally toggle it on or off.
+
+Argument:
+
+<expL> toggles the insert mode on or off.  True (.T.) turns
+insert on, while false (.F.) turns insert off.  The default
+Clipper setting is false (.F.)
+
+Returns:	A logical value.
+
+READINSERT() returns the current insert mode setting if an
+argument is not specified, the previous insert mode if the
+argument is specified.
+
+Example:
+
+The following sets the insert mode one prior to entering
+MEMOEDIT() and resets the prior setting when MEMOEDIT()
+terminates:
+
+ins_mode = READINSERT(.T.)			&& Turn on insert mode.
+x = MEMOEDIT(x)
+READINSERT(ins_mode)				&& Restore last setting.
+
+Library:	CLIPPER.LIB
+
+See also: 	READ, MEMOEDIT(), READEXIT()
+
+
+
+***  RESTSCREEN()
+
+Syntax:	RESTSCREEN(<expN1>, <expN2>, <expN3>, <expN4>,
+		<expC>)
+
+Purpose:
+
+To display a previously saved screen region to a specified
+screen area.
+
+Arguments:
+
+<expN1...expN4> are the screen coordinates to display screen
+data contained in <expC>.
+
+<expC> is a character string containing the screen data to
+display.
+
+Returns:	There is no return value.
+
+Usage:
+
+RESTSCREEN() is used to redisplay a screen region saved with
+SAVESCREEN().  The screen location to restore may the same or
+different.  If you specify a new screen location, be sure that
+the new screen region is the same size or you will get ambiguous
+results. In addition, do not use RESTORE SCREEN to restore
+screen regions saved with SAVESCREEN() or you will get equally
+ambiguous results.
+
+Note:  RESTSCREEN() is not supported with the ANSI.OBJ screen driver.
+
+Example:
+
+winbuff = SAVESCREEN(1, 1, 20, 40)
+<statements>...
+RESTSCREEN(1, 1, 20, 40 winbuff)
+
+Library:	EXTEND.LIB
+
+See also:	RESTORE SCREEN, SAVE SCREEN, SAVESCREEN()
+
+
+
+
+***  SAVESCREEN()
+
+Syntax:	SAVESCREEN(<expN1>, <expN2>, <expN3>, <expN4>)
+
+Arguments:
+
+<expN1...expN4> are the coordinates of the screen region to
+save.
+
+Returns:	A character string.
+
+SAVESCREEN() returns the specified screen region as a string
+that is up to 4000 bytes in length.
+
+Usage:
+
+SAVESCREEN() is used to save a screen region to a memory
+variables.  To restore the partial screen use RESTSCREEN().
+
+Typically, you would save and restore a screen region when using
+a pop-up menu or for dragging a screen object.
+
+Note:  SAVESCREEN() is not supported with the ANSI.OBJ screen driver.
+
+Example:
+
+The following user-defined function creates a pop-up menu using
+ACHOICE() in combination with SAVESCREEN() and RESTSCREEN()
+returning the choice in the array of choices:
+
+FUNCTION PopUp
+PARAMETERS t, l, b, r, choices, ufunc, color
+PRIVATE winbuff, menuchoice, lastcolor
+
+* Save stuff.
+winbuff = SAVESCREEN(t, l, b, r)
+lastcolor = SETCOLOR(color)
+
+* Clear region and display menu.
+@ t, l TO b, r DOUBLE
+menuchoice = ACHOICE(t + 1, l + 1, b - 1, r - 1,;
+				 choices, ufunc)
+
+* Clean up and go home.
+RESTSCREEN(t, l, b, r, winbuff)
+SET COLOR TO (lastcolor)
+
+RETURN menuchoice
+
+Library:	EXTEND.LIB
+
+See also:	RESTORE SCREEN, SAVE SCREEN, RESTSCREEN()
+
+
+
+
+*** SETCANCEL()
+
+Syntax:	SETCANCEL([<expL>])
+
+Purpose:	To toggle the termination key, Alt-C, on or off. 
+
+Argument:	<expL> toggles the termination capability on or off.
+		Specifying true (.T.) toggles termination on and false
+		(.F.) toggles it off.
+
+Returns: 	SETCANCEL() returns the previous setting if an argument
+		is specified and the current setting if an argument
+		was not.
+
+Library:	CLIPPER.LIB
+
+See also:	ALTD(), SET ESCAPE 
+
+
+
+***  SETCOLOR() 
+
+Syntax:	SETCOLOR([<expC>])
+
+Purpose:
+
+To return the current or previous color setting and optionally
+define colors for the next screen painting activity.
+
+Arguments:
+
+<expC> is a character string containing the standard, enhanced,
+border, background, and unselected color settings to make the
+current colors.  Unlike SET COLOR TO, SETCOLOR() with no
+argument does not restore colors to their default values.
+
+Note also that SETCOLOR() only supports color letter
+combinations and not color numbers.
+
+Returns:	A character string.
+
+SETCOLOR() returns a string representing the last color setting
+if <expC> is specified and the current setting if it is not
+specified.
+
+Usage:
+
+SETCOLOR() supports the same color settings as SET COLOR.
+
+Standard/Enhanced: The "standard" and "enhanced" settings are
+color pairs with a foreground and an optional background color.
+"Standard" is used by all output, such as @...SAY and ?.
+"Enhanced" setting affects only the display of GETs.
+
+Border: Sets border color.
+
+Background: The "background" is not currently supported by any
+machines for which Nantucket provides drivers.
+
+Unselected: The "unselected" setting displays the current GET in
+the "enhanced" color while other GETs are displayed in the
+"unselected" color.
+
+Attributes: High intensity and blinking are the supported
+attributes of colors.  High intensity is denoted by "+" and
+blinking with "*."  Each attribute specified is applied to the
+foreground color no matter where it occurs in the setting
+definition.
+
+Colors:  The following table lists all the colors available:
+
+Clipper Color Table
+
+Color			Letter
+----------------------
+Black			N/Space
+Blue			B
+Green			G
+Cyan			BG
+Red				R
+Magenta			RB
+Brown			GR
+White			W
+Gray			N+
+Yellow			GR+
+Blank			X
+Underline		U
+Inverse Video	I
+
+Examples:
+
+* Get current color setting.
+curr_color = SETCOLOR()
+
+* Set a new color the same as SET COLOR.
+SETCOLOR("BR+/N,R+/N")
+
+* Get current color setting and set new one.
+new_color = "BR+/N,R+/N"
+old_color = SETCOLOR(new_color)
+
+* Default colors.
+SET COLOR TO
+SETCOLOR()				&& Result: W/N,I/N,N,N,I/N
+
+Library:	EXTEND.LIB
+
+See also:	SET COLOR TO
+
+
+
+***  TONE()
+
+Syntax:	TONE(<expN1>, <expN2>)
+
+Purpose:
+
+To sound a speaker tone for a specified frequency and duration.
+
+Arguments:
+
+<expN1> is the frequency of the tone to sound.  
+
+<expN2> is the duration of the tone measured in increments of
+1/18 of a second.  One second, therefore, is 18.
+ 
+Note that for both arguments, non-integer digits are truncated.
+
+Returns:	There is no return value.
+
+Usage:
+
+TONE() sounds the speaker at the specified frequency for the
+specified duration.  The duration is measured in increments of
+1/18 of a second.  The frequency is measured in hertz (cycles
+per second).  Frequencies less than 20 are inaudible.  The
+following are the frequencies of standard musical notes:
+ 
+Table of Musical Notes
+
+Pitch	Frequency	Pitch	Frequency
+-------------------------------------
+C	130.80			mid C	261.70
+C#	138.60			C#	277.20
+D	146.80			D	293.70
+D#	155.60			D#	311.10
+E	164.80			E	329.60
+F	174.60			F	349.20
+F#	185.00			F#	370.00
+G	196.00			G	392.00
+G#	207.70			G#	415.30
+A	220.00			A	440.00
+A#	233.10			A#	466.20
+B	246.90			B	493.90
+					C	523.30
+
+Examples:
+
+The following example is a beep procedure that sounds a tone
+sequence indicating a batch operation has completed:
+
+PROCEDURE DoneBeep
+PARAMETERS warp
+
+IF PCOUNT() < 1
+	warp = 20
+ENDIF
+
+TONE(warp * 150, 8)
+TONE(warp * 130, 10)
+TONE(warp * 140, 9)
+TONE(warp * 100, 20)
+RETURN
+
+This example is a tone sequence you can use to indicate
+and invalid keystrokes or boundary conditions:
+
+PROCEDURE ErrorBeep
+
+FOR i = 1 TO 3
+	TONE(300, 1)
+	TONE(499, 5)
+	TONE(700, 5)
+NEXT
+RETURN
+
+Library:	EXTEND.LIB
+
+Source:		EXAMPLEA.ASM
+
+See also:	SET BELL
+
+
+
+***  USED() 
+
+Syntax:	USED()
+
+Purpose:
+
+To determine if a database file is in USE in the current
+work area.
+
+Returns:	A logical value.
+
+USED() returns true (.T.) if there is database file in USE in
+the current work area, false (.F.) if not.
+
+Example:
+
+SET EXCLUSIVE OFF
+SELECT 1
+USE Dbf1
+IF USED()
+	SET INDEX TO Ntx1
+ELSE
+	? "Unable to USE file..."
+	INKEY(0)
+ENDIF
+
+Library:	CLIPPER.LIB
+
+See also:	USE, SELECT, NETERR(), SELECT()
+
+
+
+
+
+NEW COMMANDS 
+------------
+
+***  BEGIN SEQUENCE...END 
+
+Syntax: 	BEGIN SEQUENCE
+			<statements>...
+			[BREAK]
+			<statements>...
+			END
+
+Purpose:
+
+To define a control structure for user-defined error scoping
+within the flow of a program.
+
+Options:
+
+Break:  The BREAK statement branches execution to the statement
+immediately following the matching END statement.
+
+Usage:
+
+BEGIN SEQUENCE...END is a control structure that allows
+relatively easy definition of exception handling.  When an
+exception occurs, issue a BREAK to branch control to the program
+statement immediately following the END statement that
+terminates the current SEQUENCE program structure.  BREAK can
+occur in the current procedure or in a nested procedure.  Nested
+procedures can be nested any number of levels below the BEGIN
+SEQUENCE structure which may also include any of the runtime
+error procedures.  The latter allows you to define local
+recovery operations for runtime error conditions specific to the
+context in which they occur.  For example, you might want to
+modify the Print_Error procedure in order to BREAK to local
+recovery for certain types of device errors, such as printing
+errors.  The following code fragment demonstrates the BEGIN
+SEQUENCE block and a section of the modified Device_error
+procedure:
+
+* Main procedure.
+error = 0
+BEGIN SEQUENCE
+.
+.
+.
+END
+*
+* Local error recovery and exception handling.
+DO CASE
+CASE error = 1
+	* Device error.
+
+CASE error = 2
+	* Other errors.
+ENDCASE
+RETURN
+
+* Within Error.prg.
+FUNCTION Device_error
+PARAMETERS <parameter list>
+*
+IF <condition>			&& Local error recovery.
+	error = 1
+	BREAK
+ENDIF
+RETURN .T.
+
+For more information on runtime errors, refer to ERROR.DOC.
+
+Example:
+
+BEGIN SEQUENCE
+	<statements>...
+	IF break_cond
+		BREAK
+	ENDIF
+	<statements>...
+END
+
+<recovery statements>...
+
+Library:	CLIPPER.LIB
+
+See also:	RETURN
+
+
+
+EXAMPLE FUNCTIONS 
+-----------------
+
+***  ALLTRIM()
+
+Syntax:	ALLTRIM(<expC>)
+
+Purpose:	To remove leading and trailing spaces.
+
+Argument:	<expC> is the character string to trim.
+
+Returns:	A character string.
+
+ALLTRIM() returns <expC> without leading or trailing blanks and
+is the equivalent of LTRIM(RTRIM(<expC>).
+
+Examples:
+
+charvar = SPACE(10) + "string" + SPACE(10)
+? LEN(charvar)							&& Result: 26
+? LEN(ALLTRIM(charvar))					&& Result: 6
+
+Library: EXTEND.LIB
+
+See also:	LTRIM(), RTRIM()
+
+
+***  DESCEND()
+
+Syntax:	DESCEND(<exp>)
+
+Purpose:	To create and SEEK indexes in descending order.
+
+Argument:	<exp> is an expression that returns any data type.
+
+Returns:
+
+DESCEND() returns the same data type as the <exp> in a
+complemented form.
+
+Usage:
+
+DESCEND() is designed to be used in combination with INDEX and
+SEEK to allow for the creation of descending order indexes.
+
+Examples:
+
+To use the DESCEND() in an INDEX expression, use the following
+syntax:
+
+INDEX ON DESCEND(Sales_date) TO date_dwn
+
+To SEEK on the descending index, use the following syntax:
+
+SEEK DESCEND(find_date)
+
+Library: 	EXTEND.LIB
+
+See also:	INDEX, SEEK
+
+
+***  DISKSPACE()
+
+Syntax:	DISKSPACE([<expN>])
+
+Purpose:
+
+To determine the number of available bytes remaining on the
+specified disk drive.
+
+Argument:
+
+<expN> is the number of the drive to query where one is drive A,
+two is B, and three is C, etc.  The default is the current drive
+if <expN> is omitted or zero.
+
+Returns:	An integer numeric value.
+
+DISKSPACE() returns the number of bytes of empty space on a disk
+drive.  If DISKSPACE() is executed without an argument, the
+value returned reflects the amount of space available on the
+default disk drive.
+
+Usage:
+
+DISKSPACE() is useful when COPYing or SORTing to another drive
+and you want to determine if there is enough space available on
+the destination before you initiate the operation.  A variation
+of this concept is to use DISKSPACE() in combination with the
+RECSIZE() and RECCOUNT() functions to create a procedure to
+automatically back up database files.
+
+Example:
+
+This example is a user-defined function that demonstrates the
+use of DISKSPACE() to backup a database file to another drive.
+To use this function, you must specify the target database file
+name and the target drive name as arguments.  If the operation
+is successful, BackUp() returns true (.T.), otherwise there is
+not enough space on the target drive and it returns false (.F.).
+
+FUNCTION BackUp
+PARAMETERS outfile, drive
+*
+needed = INT((RECSIZE() * LASTREC()) + HEADER() + 1)
+IF DISKSPACE() < needed
+	RETURN .F.
+ENDIF
+COPY TO &drive.:&outfile.
+RETURN .T.
+
+Library: EXTEND.LIB
+
+Source:	EXAMPLEC.C
+
+See also:	LUPDATE(), LASTREC()/RECCOUNT(), RECSIZE()
+
+
+***  GETE()
+
+Syntax:	GETE(<expC>)
+
+Purpose:
+
+To retrieve the contents of a DOS environmental variable.
+
+Argument:
+
+<expC> is the name of the DOS environmental variable.
+
+Returns:	A character string.
+
+Usage:
+
+GETE() locates a specified DOS operating system environmental
+variable and returns the contents.
+
+Example:
+
+path_set = GETE("PATH")
+SET PATH TO &path_set
+
+Library:	EXTEND.LIB
+
+
+***  HEADER()
+
+Syntax:	HEADER()
+
+Purpose:
+
+To obtain the length of the header area of the current database
+file.
+
+Returns:	An integer numeric value.
+
+HEADER() returns the number of bytes in the header of the
+current database file.
+
+Usage:
+
+Use with RECCOUNT()/LASTREC(), RECSIZE() and DISKSPACE()
+to create procedures backing up files.
+
+Example:
+
+USE Sales
+? HEADER()										&& Result: 258
+
+* Number of bytes in the current database file.
+? (RECSIZE() * LASTREC()) +;
+   HEADER() + 1								&& Result: 10339
+
+Library:	EXTEND.LIB
+
+See also:	DISKSPACE(), LASTREC()/RECCOUNT(), RECSIZE()
+
+
+***  ISALPHA()
+
+Syntax:	ISALPHA(<expC>)
+
+Purpose:
+
+To determine whether the specified character string begins with
+an alphabetic character.
+
+Argument:	<expC> is the character string to examine.
+
+Returns:	A logical value.
+
+ISALPHA() returns true (.T.) if the first character in <expC> is
+alphabetic; otherwise, it returns false (.F.).
+
+Usage:
+
+An alphabetic character consists of any upper case or lower case
+letter from A to Z.  ISALPHA() returns a logical false (.F.) if
+a string begins with a number or any other character.
+
+Examples:
+
+? ISALPHA("AbcDe")				&& Result: .T.
+? ISALPHA("aBcDE")				&& Result: .T.
+? ISALPHA("1BCde")				&& Result: .F.
+? ISALPHA(".FRED")				&& Result: .F.
+
+Library:	EXTEND.LIB
+
+See also:	ISLOWER(), ISUPPER(), LOWER(), UPPER()
+
+
+***  ISLOWER()
+
+Syntax:	ISLOWER(<expC>)
+
+Purpose:
+
+To determine whether the leftmost character in the specified
+character string is lower case.
+
+Argument:	<expC> is the character string to examine.
+
+Returns:	A logical value.
+
+ISLOWER() returns true (.T.) if the first character of the
+character string is lower case.  Any other character returns
+false (.F.).
+
+Examples:
+
+? ISLOWER("aBcDe")			&& Result: .T.
+? ISLOWER("AbcDe")			&& Result: .F.
+
+Library:	EXTEND.LIB
+
+See also:	ISALPHA(), ISUPPER(), LOWER(), UPPER()
+
+
+***  ISPRINTER()
+
+Syntax:	ISPRINTER()
+
+Purpose:	To determine if the parallel port is ready.
+
+Returns:	A logical value.
+
+ISPRINTER() returns true (.T.) if the current port is parallel
+and ready; false (.F.) if it is not.
+
+Example:
+
+@ 22, 17 SAY "Press any key to print"
+@ 23, 38 SAY "or Esc to abort..."
+key = 0
+DO WHILE key <> 27 .AND. (.NOT. ISPRINTER())
+	key = INKEY(0) 
+ENDDO
+@ 22, 00 CLEAR
+
+Library:	EXTEND.LIB
+
+Source:		EXAMPLEA.ASM
+
+See also:	SET DEVICE, SET PRINT
+
+
+***  ISUPPER()
+
+Syntax:	ISUPPER(<expC>)
+
+Purpose:	
+
+To determine whether the leftmost character in a character
+string is upper case.
+
+Argument:	<expC> is the character string to examine.
+
+Returns:	A logical value.
+
+ISUPPER() returns true (.T.) if first character is upper case;
+otherwise it returns false (.F.).
+
+Examples:
+
+? ISUPPER("AbCdE")			&& Result: .T.
+? ISUPPER("aBCdE")			&& Result: .F.
+
+Library:	EXTEND.LIB
+
+See also:	ISALPHA(), ISLOWER(), LOWER(), UPPER()
+
+
+***  LEFT()
+
+Syntax:	LEFT(<expC>, <expN>)
+
+Purpose:
+
+To extract a specified number of characters from the left of a
+character string.
+
+Arguments:	
+
+<expC> is a character string from which to extract characters.
+
+<expN> is the number of characters to extract.
+
+Returns:	A character string.
+
+LEFT() returns the leftmost <expN> characters of <expC>.  If
+<expN> is negative or is zero, LEFT() returns a null string
+("").  If <expN> is larger than the length of the character
+string, LEFT() returns the entire string.
+
+Example:
+
+? LEFT("ABCDEF", 3)					&& Result: ABC
+
+Library:	EXTEND.LIB
+
+See also:
+
+AT(), LTRIM(), RAT(), RIGHT(), RTRIM(), STUFF(),
+SUBSTR(), TRIM()
+
+
+*** LUPDATE()
+
+Syntax:		LUPDATE()
+
+Purpose:
+
+To determine the date the database file in the current
+work area was last modified and CLOSEd.
+
+Returns:	A date value.
+
+LUPDATE() returns the date of change of the current database
+file.  If there is no database file in USE in the current work
+area, LUPDATE() returns a blank date.  Note that the last date
+of change is not reflected until the database file is CLOSEd.
+
+Examples:
+
+? DATE() 				&& Result: 09/01/87
+USE Sales
+? LUPDATE()				&& Result: 08/31/87
+*
+APPEND BLANK
+? LUPDATE()				&& Result: 08/31/87
+CLOSE DATABASES
+*
+USE Sales
+? LUPDATE()				&& Result: 09/01/87
+
+Library:	EXTEND.LIB
+
+See also:	FIELD()/FIELDNAME(), LASTREC()/RECCOUNT(), RECSIZE()
+
+
+***  RECSIZE()
+
+Syntax:	RECSIZE()
+
+Purpose:
+
+To determine the record length of the current database file.
+
+Returns:	An integer numeric value.
+
+RECSIZE() returns the record length for the database file in USE
+in the current work area.  If no database file is in USE,
+RECSIZE() returns zero.
+
+Usage:
+
+RECSIZE() determines the length of a record by adding the length
+of each field in the record and adding one character to the
+total (for the asterisk that indicates a deleted record).  When
+this value is multiplied by the number of records in the file
+(the result of LASTREC()), the product is the amount of space
+occupied by the file's records.
+
+To determine the entire length of a file, add the length of the
+file header:
+
+filesize = (RECSIZE() * LASTREC()) + HEADER()
+
+RECSIZE() is useful in programs that perform automatic file
+backup.  When used in conjunction with DISKSPACE(), the
+RECSIZE() function can assist in ensuring if sufficient free
+space exists on a disk before a file is stored.
+
+Library:	EXTEND.LIB
+
+See also:	DISKSPACE(), FIELD()/FIELDNAME(), HEADER(),
+LASTREC()/RECCOUNT()
+
+
+***  RIGHT()
+
+Syntax:	RIGHT(<expC>, <expN>)
+
+Purpose:
+
+To extract a specified number of characters from a character
+string beginning with the rightmost character.
+
+Arguments:
+
+<expC> is the character string from which to extract characters.
+
+<expN> is the number of characters to extract.
+
+Returns:	A character string.
+
+RIGHT() returns the  rightmost <expN> characters of <expC>.  If
+<expN> is negative or is zero, RIGHT() returns an null string
+("").  If <expN> is larger than the length of the character
+string, RIGHT() returns the entire string.  The maximum string
+size is 65,535 (64K) bytes.
+
+Usage:
+
+Note that Right() is the same as SUBSTR() with a negative first
+argument.  For example, RIGHT("ABC", 1) is the same as
+SUBSTR("ABC", -1)
+
+Example:
+
+? RIGHT("ABCDEF", 3)					&& Result: DEF
+? SUBSTR("ABCDEF", -3)					&& Result: DEF
+
+Library:	EXTEND.LIB
+
+See also:	LEFT(), LTRIM(), RTRIM()/TRIM(), STUFF(), SUBSTR(), 
+TRIM()
+
+
+***  SOUNDEX()
+
+Syntax:	SOUNDEX(<expC>)
+
+Purpose:
+
+To convert a characters string to soundex form (phonetic
+complement) useful for INDEXing and searching.
+
+Argument:
+
+<expC> is the character string to convert to soundex form.
+
+Returns:	A character string.
+
+The string returned is a code in the form A9999.
+
+Usage:
+
+SOUNDEX() is useful for creating indexes and searching for
+strings where the precise spelling is unknown.  The algorithm
+SOUNDEX() is based on is by Donald E. Knuth from the book, The
+Art of Computer Programming, Volume 3, "Sorting and Searching,"
+page 392.
+
+Example:
+
+USE Sales
+INDEX ON SOUNDEX(Salesman) TO Salesman
+*
+SEEK SOUNDEX("Bill")
+? FOUND(), Salesman						 && Result: .T. Bill
+
+SEEK SOUNDEX("Billy")
+? FOUND(), Salesman						 && Result: .T. Bill
+
+Library:	CLIPPER.LIB
+
+Source:		EXAMPLEC.C
+
+See also:	INDEX, LOCATE, SEEK, SET SOFTSEEK
+
+
+***  STUFF()
+
+Syntax:	STUFF(<expC1>, <expN1>, <expN2>, <expC2>)
+
+Purpose:
+
+To replace characters in a character string and return the
+altered character string.
+
+Arguments:	<expC1> is the target character string.
+
+<expN1> is the starting position in the target string where
+replacement occurs.
+
+<expN2> is the number of characters to replace in the target
+string (<expC1>).
+
+<expC2> is the replacement string.
+
+Returns:	A character string.
+
+Essentially STUFF() replaces <expN2> characters in the target
+string (<expC1>) beginning at <expN1> with <expC2>.
+
+Usage:
+
+With this basic structure STUFF() can perform the following six
+operations:
+
+Insert:  If you specify zero for <expN2>, no characters are
+removed from <expC1> and the replacement string (<expC2>) is
+inserted at <expN1> and the entire string is returned.
+
+Replace:  If you specify a replacement string (<expC2>) the same
+length as <expN2>, <expC2> replaces characters beginning at
+<expN1>.
+
+Delete:  If replacement string (<expC2>) is a null string (""),
+the number of characters specified by <expN2> are removed from
+<expC1> and the string is returned without any added characters.
+
+Replace and insert:  If the replacement string (<expC2>) is
+longer than <expN2>, all characters from <expN1> are replaced
+and the rest of the replacement string (<expC2>) is inserted.
+
+Replace and delete:  If the length of the replacement string
+(<expC2>) is less than <expN2>, all characters in the target
+string (<expC1>) are deleted from the end of <expC2> up to
+<expN2>.
+
+Replace and delete rest:  If <expN2> is greater than the length
+of the target string (<expC1>), the replacement string (<expC2>)
+is inserted at <expN1> and the rest of <expC1> is deleted.
+
+Examples:
+
+* Insert
+? STUFF("ABCDEF", 2, 0, "xyz")			&& Result: AxyzBCDEF
+
+* Replace.
+? STUFF("ABCDEF", 2, 3, "xyz")			&& Result: AxyzEF
+
+* Delete.
+? STUFF("ABCDEF", 2, 2, "")				&& Result: ADEF
+
+* Replace and insert.
+? STUFF("ABCDEF", 2, 1, "xyz")			&& Result: AxyzCDEF
+
+* Replace and delete.
+? STUFF("ABCEDF", 2, 4, "xyz")			&& Result: AxyzF
+
+* Replace and delete rest.
+? STUFF("ABCEDF", 2, 10, "xyz")			&& Result: Axyz
+
+Library:	EXTEND.LIB
+
+Source:		EXAMPLEC.C
+
+See also:	AT(), LEFT(), RIGHT(), RAT(), STRTRAN(), SUBSTR()
+
+
+UNDOCUMENTED COMMANDS
+---------------------
+
+***  CALL
+
+Syntax:	CALL <process> WITH <exp list>
+
+Purpose:
+
+To execute separately compiled or assembled routines and
+programs.
+
+Arguments:
+
+<exp list> is the list of expressions of any data type to pass
+to the external process.
+
+Usage:
+
+Programs called must be defined as FAR processes ending with a
+FAR return.  All data references consist of 4 byte pointers of
+the form SEGMENT:OFFSET, and are on top of the stack in the
+order passed (see the examples below).  All data types are
+passed as reference.  Your program must preserve the BP, SS and
+DS registers.
+
+NOTE: Microsoft C 5.0 places leading underscores on function
+names.  To CALL them, you must use the form:
+
+CALL _<function>
+
+Passing parameters:  
+
+The CALL command parameter list may consist of up to seven
+parameters.  The DX:BX and ES:BX registers point to the first
+parameter, similar to dBASE III PLUS.  The only commands you
+need to add to a LOAD module are:
+
+PUBLIC <proc> 
+
+and 
+
+mov ds,dx 
+
+Character strings are passed by reference, and are null
+terminated (a 0 byte at the end of the string).  The length of
+any data item must be preserved, as the data area contains many
+data items consecutively in memory.  If an item is lengthened,
+you will in all likelihood write over other data.
+
+Numeric variables are passed as 8 byte floating point
+representation, consisting of a 53 bit characteristic and an 11
+bit exponent biased by 1023.  To pass numeric parameters as
+integers, use WORD() to convert them from the Clipper internal
+format to "int."  If the numeric value you are passing is
+greater than ñ<F128M><145>32,767, it can not passed as an "int"
+and therefore the use of WORD() is inappropriate.
+
+Compiling and linking: 
+CALLed programs must conform to the following rules:
+
+Processes must be in INTEL 8086 relocatable object file format
+with the .OBJ file extension.
+
+Processes must follow the C language calling and parameter
+passing conventions.
+
+Processes must be available to the linker at link time along
+with the library of the source compiler.  You will need run-time
+support for any language other than assembly language.  See your
+compiler manual for further information.
+
+Examples:
+
+The following two examples, the first in C and the second in
+assembler change the variable "var" from "123" to "ABC"
+
+var = "123"
+CALL Test WITH var, "ABC"
+? var 
+RETURN 
+
+To CALL a C program, use the following simple program as a
+basis:
+
+/* Compile as large model*/
+test (p1, p2)
+
+char *p1;
+char *p2;
+
+{
+	while (*p2)
+	*p1++ = *p2++;
+}
+
+To CALL an assembly language program that accomplishes the same
+results, use the following example:
+
+var = "123"
+CALL Test WITH var, "ABC"
+? var 
+RETURN
+
+Clipper executes the CALL statement above using the following
+parameter passing conventions:
+
+Stack Address 	Stack				Command
+-------------------------------------------
+sp+10		[Segment of "ABC"]			push
+sp+8		[Offset of "ABC"]			push
+sp+6		[Segment of var]			push
+sp+4		[Offset of var]				push
+sp 			[Segment:offset return address]	CALL FAR TEST
+
+Thus the assembly language routine could be as follows:
+
+PUBLIC Test	; Declare your process.
+_PROG SEGMENT BYTE 'PROG'	; Clipper code segment.
+
+ASSUME cs:_PROG 			; Put code in Clipper segment.
+;
+Test 	PROC FAR 			; Required declaration of a FAR PROC.
+		push bp 			; Stack + 2.
+		mov 	bp, sp 		; Get pointer.
+		push ds
+		push es
+		cld			;
+		lds	si,[bp+10]  	; Segment offset of "ABC"
+		les 	di,[bp+6] 	; Segment offset of "123" (var)
+		mov 	cx,3
+		rep 	movsb
+		pop 	es
+		pop 	ds
+		pop 	bp
+		ret
+
+Test 	ENDP 			; End of process.
+		_PROG ENDS 		; End segment.
+		END				; Program end.
+
+
+Library:	CLIPPER.LIB
+
+See also:	DO...WITH, WORD(), EXTEND.DOC
+
+
+*** Arrays
+
+Maximum Array Elements
+
+The maximum number of array elements per array now allowed in
+Clipper is 4096.  Previously, the limit was 2048 elements for
+each array.
+
+
+*** English Spelling of Keywords
+
+The following commands can now be specified using traditional
+English spelling:
+
+American Spelling		English Spelling
+----------------------------------------
+SET COLOR TO			SET COLOUR TO
+SET MESSAGE TO CENTER	SET MESSAGE TO CENTRE
+ISCOLOR()				ISCOLOUR()
+
+
+*** SET CLIPPER
+
+SET CLIPPER=[Vnnn][;Rnnn][;Ennn][;Xnnn][;Fnnn][;Sn]
+
+An additional parameter, "S", has been added to the Clipper
+environment variable.  The "S" parameter eliminates "snow"
+caused by some graphics adapters during screen writes.  A value
+of 0 is the default and will have the fastest screen writes.  A
+value of 1 will solve the problem if it occurs on your system.
+

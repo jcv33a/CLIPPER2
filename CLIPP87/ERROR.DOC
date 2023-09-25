@@ -1,0 +1,414 @@
+THE RUNTIME ERROR SYSTEM
+
+In Clipper Summer '87, recoverable runtime errors are divided
+into the following classes:
+
+	* Database Error
+	* Expression error
+	* Miscellaneous error
+	* Print error
+	* Open error
+	* Undefined error
+
+For each class of error, there is a runtime error handling
+function that is called whenever a runtime error occurs as
+explained below.
+
+OVERVIEW OF ERROR FUNCTIONS
+
+The default low level error handling functions supplied in
+CLIPPER.LIB are written in Clipper.  The source code for these
+functions is provided in the file Errorsys.prg.  If you wish to
+supply more extensive runtime error handling may modify or
+rewrite the functions in Errorsys.prg.  The new functions can be
+compiled with Clipper and linked within application as
+replacements for the default functions in CLIPPER.LIB.
+
+The only proviso is link your main program first before
+ERRORSYS.OBJ or DEBUG.OBJ.
+
+Automatic Parameters
+
+All of the low level error handling functions share a common
+parameter structure.  When one of the functions is called, it is
+as if the following code had been executed:
+
+xxx_error(name, line, info [, model [, _1 [, _2 [, _3 [, _4 [, _5]]]]]])
+
+All of the functions are called with the "name," "line," and
+"info" parameters.  The other parameters may or may not be passed
+to a particular error function.
+
+Name Parameter 
+
+The "name" parameter contains a character type value.  The value
+is equal to the name of the procedure or function which was
+executing when the error occurred.
+
+Line Parameter
+
+The "line" parameter contains a numeric value.  The value is
+equal to the source code line number of the statement which
+caused the error.  Note that this line number is relative to the
+beginning of the source file, not the start of the function or
+procedure.  If the source file was compiled with the -l option
+(line numbers disabled), this parameter will contain zero.
+
+Info Parameter
+
+The "info" parameter contains a character type value.  The value
+consists of information about the error.  The information
+consists of a descriptive phrase (e.g. "Type error") optionally
+followed by information describing the situation of the error
+(e.g. ("In macro")).  The additional information, if supplied, is
+surrounded by parentheses.
+
+Model Parameter
+
+The "model" parameter, if supplied, contains a character string. 
+The value consists of a fragment of Clipper source code
+illustrating the operation which caused the error.  Note that the
+fragment is not identical to the original source code which
+caused the error.  The fragment can be used with the operand
+paramters (discussed below) to reconstruct the operation which
+caused the error.
+
+Operand Parameter
+
+The "_1," "_2," etc. parameters, if supplied, may contain values
+of any type, depending on the circumstances of the error.  These
+values are equal to the values which were supplied to the Clipper
+operation which failed.
+
+Note that, although they are unusual, the names "_1", "_2",  etc.
+are valid Clipper identifier names.  These names were chosen to
+avoid conflicts with identifiers in your application.
+
+Recovery Strategy
+
+Using the automatic parameters passed, you can construct a
+strategy to recover from these errors.   In addition to the
+automatic parameters there are several support functions you can
+use.  They are as follows:
+
+   -  PROCNAME() 
+   
+   	You can use this function to identify, display, or pass as
+      an argument to another user-defined function, the name of
+      the error function called.
+   
+   -  DOSERROR()
+   
+   	You will find this function most useful for determining the
+      cause of failure of a RUN command.  DOSERROR() returns the
+      current error number.  This will tell you whether the
+      problem lies with the location of COMMAND.COM or the amount
+      memory required to RUN a specify program.
+   
+   -  ALTD()
+   
+   	This function invokes the Clipper debugger.  There are two
+      modes appropriate for use within an error function.  The
+      first and most commonly used in the default error functions
+      is ALTD(2) which invokes the debugger displaying the
+      Variable:View Privates screen.  The second mode and most
+      useful for interactive debugging is ALTD() with no
+      argument.  Invoking the debugger in this mode displays the
+      last screen.  Ideally, you will have set the screen you
+      want to display next and then resumed execution of your
+      program using the Alt-G speed key to Control:Go.
+   
+Return Method
+
+The RETURN argument of the error function determines the action
+taken by Clipper when the error function terminates.  
+
+1. For some classes of errors, the error function can RETURN
+   control to the command that instigated the error.  With this
+   type of error function, RETURNing false (.F.) forces a retry
+   of the operation that instigated the error condition. 
+   RETURNing false (.F.) terminates the pending operation and
+   passes control to the next intermediate code in the program.
+
+2. For other classes of errors that are more severe, RETURNing
+   true (.T.) will retry, but RETURNing false (.F.) causes
+   Clipper to QUIT.  When this is the case, Clipper CLOSEs ALL
+   open files.  
+
+3. For expression errors, the RETURN value is substituted for the
+   term in which the error occurred.  For example, if you attempt
+   to evaluate the following expression containing a divide by
+   zero error:
+
+   	12 + (12 / 0)
+   
+	The expression error occurs within the term (12 / 0).  If you
+   RETURN 1, the result of the expression is 13.
+
+ERROR CLASS DESCRIPTIONS
+
+Database Error
+
+Database errors occur in when an action is taken that affects the
+database file between the time it USEd and CLOSEd.  This includes
+operations such as APPEND BLANK or REPLACE.  When this class of
+error occurs, the error function Db_error() is called with the
+following general syntax:
+
+Db_error(name, line, info)
+
+The "info" parameter returns one of three messages indicating the
+type database error:
+
+   -  Database required
+   
+      Occurs when a you attempt to perform a database operation
+      and one is not in USE in the work area you are accessing.
+   
+   -  Lock required
+   
+   	Occurs when you attempt to operate on a file or record with
+      an operation requiring a lock (either file or record).
+   
+   -  Exclusive required
+   
+   	Occurs when you attempt a database operation that requires
+      EXCLUSIVE USE of the database file.
+   
+   -  Field numeric overflow
+   	
+   	Occurs when you attempt to REPLACE a numeric field with a
+      value that is too large to fit.
+   
+   -  Index file corrupted
+   
+   	Occurs when Clipper detects damage to an index file during
+      an update operation.
+
+To recover, you can RETURN (.T.) and the database operation is
+retried or branch with a BREAK to the END of the current
+SEQUENCE.  However, if you RETURN (.F.), Clipper automatically
+executes a QUIT (CLOSEs ALL) and unceremoniously exits to DOS.
+
+Expression Errors
+
+Expression errors can occur whenever there is an evaluation of an
+expression.  Typically, errors of this kind are type mismatch or
+divide by zero errors.  Whenever an error occurs during
+expression evaluation the error function, Expr_error(), is called
+with the following parameters:  
+
+Expr_error(name, line, info, model, _1, _2, _3)
+
+The "info" parameter returns one of three messages indicating the
+type of expression error:
+
+   -  Type mismatch
+   
+   -  Subscript range
+   
+      Occurs when you attempt to address an array element outside
+      beyond the DECLAREd dimension of the array.
+   
+   -  Zero divide
+   
+   -  Expression error
+   
+      Occurs when you attempt to expand a macro variable
+      containing an invalid expression.
+   
+The "model" contains the expression that failed as a character
+string with the operand parameters in place of the expression
+values.  The operand parameters "_1," "_2," and "_3" themselves
+contain the actual operand values.  For example, if you attempt
+to execute the following erroneous SUBSTR() expression:
+
+? SUBSTR("abc", 1, "2")
+
+"model" will contain the string "SUBSTR(_1,_2,_3)," "_1" will
+contain the character value "abc," "_2" will contain the numeric
+value 1, and "_3" will contain the character string "2."  To
+recover, you can change "_3" to a proper numeric value, evaluate
+"model" as a macro variable, and RETURN the result.  The
+following demonstrates:
+
+_3 = 2
+RETURN &model.
+
+Another approach is to simply RETURN a value like this:
+
+RETURN _1
+
+Remember that the value returned by Expr_error() is taken as the
+result of the failed operation and execution continues from the
+point of the error within the expression evaluation.  
+
+Refer to the actual code in Expr_error() in Errorsys.prg for
+specific examples of general purpose recovery strategies.
+
+Miscellaneous Errors
+
+Miscellaneous errors are unclassified but non-fatal errors and
+occur when there is a recoverable error that any of the other
+error handlers can't deal with.  When this class of error occurs,
+the error function Misc_error() is called with the following
+general syntax:
+
+Misc_error(name, line, info, model)
+
+The "info" parameter contains one of two messages indicating the
+type of error that has occurred as follows:
+
+   -  Type mismatch
+   
+   	Occurs when you attempt to REPLACE a field with the wrong
+      type.
+   
+   -  RUN error
+   	
+   	Occurs when you attempt a RUN and there is not enough
+      memory or COMMAND.COM cannot be found.  To identify the
+      specific cause of error, use DOSERROR() to query the
+      current DOS error.  
+
+The "model" parameter contains some fragment of Clipper code
+relating to the command that instigated the error.  Note that
+unlike Expr_error(), the "model" will not contain code that can
+be executed as a macro.
+
+To recover, you can retry the operation with RETURN (.T.) or
+branch with a BREAK to the END of the current SEQUENCE.  However,
+if you RETURN (.F.), Clipper automatically executes a QUIT
+(CLOSEs ALL) and unceremoniously exits to DOS.
+
+Open Error
+
+Open errors occur when a file open operation fails.  This
+includes all Clipper file operations other than those using the
+low-level file I/O functions.  When this class of error occurs,
+the error function Open_error() is called with the following
+general syntax:
+
+Open_error(name, line, info, model, _1)
+
+The "info" parameter always contains the following message:
+
+   -  Open error
+   
+The "model" in this case contains a fragment of code indicating
+the operation taking place when the error occurred.  The operand
+parameter, "_1" contains the name of the file that instigated the
+error.  
+
+To recover, you can RETURN (.T.) and the open operation is
+retried.  RETURNing false (.F.) skips the current operation and
+execution continues.  This normally has no ill effect, except
+that the file in question is not in USE as expected.  Note that
+execution may continue within the current source code line if the
+line contains several file open operations (i.e. SET INDEX).
+
+Print Error
+
+Print errors occur whenever the printer is not ready.  This is
+only true, however, when you are attempting to access a parallel
+printer.  If the printer is redirected to a serial port and the
+port is not ready, Open_error() is invoked instead.  The general
+syntax for the print error function is as follows:
+
+Print_error(name, line, info)
+
+The "info" parameter for Print_error() returns only one message:
+
+   -  Printer error
+   	
+   	Occurs when any printing operation is or becomes not
+      ready.  Note that this is independent of device and can
+      occur if, as an example, you are printing to a network
+      spooler and it goes down.  Another example is if during the
+      redirection of @...SAYs to file, there is a disk error.
+
+To recover, you can RETURN (.T.) forcing a retry of the printer
+access operation.  RETURNing false (.F.) skips the printer access
+operation and continues execution.  The latter is not recommended
+since you may not know what operation will execute next.  The
+best approach is to place printing operations within a BEGIN
+SEQUENCE construct and BREAK to a local recovery handler if a
+measured number of retries fail.
+
+Undefined errors
+
+Undefined errors occur when you refer to a variable (memory or
+field) before being defined.  Typically this includes an
+identifier reference where TYPE() would return a "U," "UE," or
+"UI."  When this class of error occurs, the error function
+Undef_error() is called with the following general syntax:
+
+Undef_error(name, line, info, model, _1)
+
+The "info" parameter returns one of three messages indicating the
+type of undefined error that has occurred:
+
+   -  Undefined identifier
+   
+   	Occurs when you specify an field, memory variable, or
+      alias  identifier that is not currently defined.
+   
+   -  Not an array
+   
+   	Occurs when you refer to an array element and the array
+      reference is not defined as an array.
+   
+   -  Missing EXTERNAL  
+   
+   	Occurs when you refer to procedure or user-defined function
+      and the identifier is not found.  This usually happens when
+      you have concealed a reference from both the compiler and
+      the linker in a macro or in a LABEL or REPORT FORM.
+
+The "model" parameter contains a code fragment you can use to
+indicate the operation where the error occurred.  "_1" contains
+the undefined identifier.  
+
+To recover, you can retry the operation with RETURN (.T.) or
+branch with a BREAK to the END of the current SEQUENCE.  However,
+if you RETURN (.F.), Clipper automatically executes a QUIT
+(CLOSEs ALL) and unceremoniously exits to DOS.
+
+OTHER ERRORS
+
+In addition to the recoverable errors described above there is a
+class of errors where recovery is limited to a retry of the
+operation that instigated the error or QUITting.
+
+Internal error
+
+This error generally occurs because of a bad index file.  Clipper
+then presents the user with a message and pauses.  Pressing any
+key QUITs.
+
+Disk Full
+
+Occurs when the disk is full during standard database file
+operations.  When this happens, the user is presented with an
+indicative message and the option to continue.  Answering "Yes"
+to the prompt retries the operation; answering "No" QUITs.
+
+Multiple Error
+
+This error occurs when there has been an error in one of the
+error functions.  In this case, Clipper displays an indicating
+message and pauses.  Pressing any key QUITs.
+
+Out of Memory
+
+This error occurs when there is no more memory for the current
+operation to continue.  In this case, Clipper displays an
+indicating message and pauses.  Pressing any key QUITs.
+
+Not Enough Memory 
+
+This error occurs when there is not enough memory to begin an
+operation.  In this case, Clipper displays an indicating message
+and pauses.  Pressing any key QUITs.
+
+

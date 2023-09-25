@@ -1,0 +1,90 @@
+******
+*   DBU
+*
+*   by Dennis L. Dias
+*
+*   A Clipper DataBase Utility
+*
+*   Copyright (c) 1986 Nantucket Inc., All Rights Reserved.
+******
+
+
+    DBU is a multi-purpose utility designed to aid the developer
+with data file manipulation without having to resort to writing
+a myriad of short programs to accomplish simple tasks. The primary
+functions available in this first release are:
+
+    1. Help
+    2. Set View
+    3. Edit
+    4. Create/Modify Structure
+    5. Index
+
+    Any function may be accessed at any time by pressing the
+assigned function key (there is no menu structure). The help
+system describes the various functions and sub-functions in
+context (14 help screens in all).
+
+
+                       COMMAND LINE
+                       ------------
+
+    A file name may be entered on the command line when the
+program is invoked. The file may be either a view (.VEW) file
+or a data (.DBF) file. If no extension is entered the current
+or specified directory is searched for a .VEW file first and,
+if not found, a .DBF file. If some other extension is entered,
+the file is assumed to be a data file. In any case, the view
+is set and EDIT mode is selected automatically. If no command
+line parameter is entered, SET VIEW is the default mode.
+
+
+                         SET VIEW
+                         --------
+
+    The view system is an on-screen matrix which illustrates the
+current status with regard to data files, index files, fields,
+relations, and filter. The first screen to appear will be divided
+into rows and columns. From top to bottom, the rows describe data
+files, index files, and field lists. Each column represents a
+database work area. When at least one file has been opened, it
+becomes possible to cursor around the screen and set up a data
+"view".
+
+To set relations and/or filter, press ^PgDn. The bottom portion
+of the screen will be overwritten with a visual representation
+of current relations and one optional filter expression. Multi-
+child relations are fully supported.
+
+    Once established, the current view may be saved in a disk
+file and restored at a later time. The system provides a default
+extension of ".VEW" for these files.
+
+
+                           EDIT
+                           ----
+
+    The contents of data files may be altered and new records
+appended. Data is formatted according to the current data "view"
+with records listed vertically. Each record is displayed as a
+series of fields on a single row and the contents of any field
+may be edited where it appears on the screen. Horizontal and
+vertical scrolling are supported along with a menu of search
+functions to seek, goto, or locate specific records.
+
+
+                  CREATE/MODIFY STRUCTURE
+                  -----------------------
+
+    A new file template is provided upon entry. Pressing the
+"Read" key allows an existing file structure to be read and
+modified. Data is preserved for fields with the same name as
+in the original file.
+
+
+                           INDEX
+                           -----
+
+    Index files may be quickly generated or modified. The key
+to an existing index may be read and edited for convenience.
+

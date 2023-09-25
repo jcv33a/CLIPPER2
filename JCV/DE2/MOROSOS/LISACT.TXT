@@ -1,0 +1,15 @@
+
+     Page No.     1
+     15-05-02
+                        LISTADO DE MOROSOS
+     
+     REF        NOMBRE     APELLIDO1  APELLIDO2  FECHA          DEBE
+     ---        ------     ---------  ---------  -----          ----
+     
+     
+     **            
+     ** Subtotal **
+                                                                   0
+     *** Total ***
+                                                                   0
+

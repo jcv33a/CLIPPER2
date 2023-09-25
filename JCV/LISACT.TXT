@@ -1,0 +1,333 @@
+
+     Page No.     1
+     30-06-03
+                        LISTADO DE PRECIOS
+                           IVA INCLUIDO
+     
+     REF    ARTICULO                          EUROS  PESETAS
+     ---    --------                          -----  -------
+     
+     
+     **  CARNES                   
+     DF02   ALAS DE PAVO                       1.87      311
+     FP20   ALBONDIGAS                         1.76      293
+     DP03   ALBONDIGAS                         2.73      454
+     DJ16   CABEZA DE LOMO                     2.65      441
+     DJ37   CINTA DE LOMO                      4.69      780
+     DJ38   CODORNICES                         0.61      101
+     DF18   CODORNICES                         0.70      116
+     PG10   FILETE LOMO                        6.49     1080
+     PG02   FILETE POLLO ENVUELTO              5.63      937
+     MH70   HAMBURGUESA BOCATTA (2u.)          0.55       92
+     PS01   HAMBURGUESAS DE POLLO              2.89      481
+     EL03   MENUDO DE CERDO                    3.91      651
+     EL01   MENUDO DE TERNERA                  4.30      715
+     DF08   MUSLO DE PAVO                      1.87      311
+     DF03   PAJARITOS                          0.59       98
+     DF04   PECHUGA DE POLLO FRESCA            4.97      827
+     DF11   PERDICES                           5.43      903
+     MA26   PERDICES SIN PLUMAS                6.06     1008
+     PG07   PINCHO DE CERDO                    0.59       98
+     PG17   PINCHO POLLO GIGANTE               0.62      103
+     
+     **  HELADOS                  
+            2 BOMBONES ALMENDRADOS             0.62      103
+            2 TARRINAS CREMA CATALANA          2.57      428
+            3 BOMBONES SABORES                 0.65      108
+            3 SPACE                            0.59       98
+            3 SUPER BOMBON                     1.69      281
+            4 TARRINAS HELADOS SABORES         0.66      110
+            6 BOMBONES ALMENDRADOS             1.63      271
+            6 CONOS SABORES                    1.82      303
+            6 SANDWICH SABORES                 1.63      271
+            8 BOMBONES NATA                    1.73      288
+            8 MINI CONOS SABORES               1.91      318
+            8 MINI FLIP-UP SABORES             2.41      401
+            8 MINI TROPICAL                    2.43      404
+            8 MINICHOC                         2.43      404
+            BARRA LECHE MERENGADA              1.13      188
+            BARRA LIMON                        0.92      153
+            BARRA NATA-CAFE                    0.92      153
+            BARRA NATA-FRESA                   0.90      150
+            BARRA NATA-VAINILLA-CHOCOLATE      0.90      150
+            BARRA TURRON                       1.11      185
+            BARRA TUTTI FRUTTI                 1.16      193
+            CONO TURRON                        0.62      103
+            CONOS SABORES                      0.65      108
+            COPA DE LIMON                      0.47       78
+            COPAS SABORES                      0.57       95
+            MIX MONTADO                        0.62      103
+     Page No.     2
+     30-06-03
+                        LISTADO DE PRECIOS
+                           IVA INCLUIDO
+     
+     REF    ARTICULO                          EUROS  PESETAS
+     ---    --------                          -----  -------
+     
+     
+            TARTA CREMA CATALANA 100 ML        3.81      634
+            TARTA CROCANTI                     1.86      309
+            TARTA JAMAICA 1100 ML              1.95      324
+            TARTA JAMAICA 600 ML               1.30      216
+            TARTA WHISKY 1800 ML               6.83     1136
+            TARTALETAS                         0.47       78
+     
+     **  MARISCOS                 
+            ALISTADO ROTO                      3.90      649
+            GAMBA 3                           21.13     3516
+            GAMBA 3//C                        15.60     2596
+            GAMBA 3/C                         20.48     3408
+            GAMBA 3/C                         22.10     3677
+            GAMBA 3BBC                        13.98     2326
+            GAMBA 3BC                         17.55     2920
+            GAMBA 3C                          35.10     5840
+            GAMBA 3XC                         25.35     4218
+            GAMBA 4C                           5.85      973
+            GAMBA 4E                          11.57     1925
+            GAMBA 4E CA                       12.74     2120
+            GAMBA 4X                           5.53      920
+            GAMBA 4X                           5.20      865
+            GAMBA CAJA DE DOS KILOS            6.50     1082
+            GAMBA COLA                        11.38     1893
+            GAMBA EXTRA EN CAJAS DE 1K        13.43     2235
+     DJ40   GAMBA PELADA 70/100                8.79     1463
+            GAMBA PELADA KILO                 11.18     1860
+            GAMBA ROTA                         3.90      649
+     FC04   GAMBON N§5                         8.20     1364
+            LANGOSTINO 5                       7.03     1170
+     EX121  LANGOSTINO COCIDO 80/100          10.15     1689
+     FN25   LANGOSTINOS 70/80                 11.32     1883
+     FN26   LANGOSTINOS 80/100                10.54     1754
+     FN23   LANGOSTINOS COC 60/80             11.73     1952
+     FN24   LANGOSTINOS COC 80/100            10.93     1819
+     FN29   LANGOSTINOS COLA 41/50            15.47     2574
+     SL62   MEJILLON MEDIA CONCHA              5.86      975
+     FC204  MEJILLON MEDIANO                   6.37     1060
+            PATAS 2                           14.63     2434
+            PATAS 2                           29.78     4955
+            PATAS 3                           21.97     3656
+     
+     **  PESCADOS                 
+            ACEDIAS EN BANDEJA ENVUELTA        4.88      812
+     PI01   ACEDIAS GRANIZADAS                 2.08      346
+     FE43   ACEDIAS SUELTAS                    1.95      324
+     PI05   ANILLA DE CALAMAR KILO             3.67      611
+     PI23   ATUN TACO                          3.91      651
+     PI18   CAELLA TACO SIN PIEL               3.20      532
+     Page No.     3
+     30-06-03
+                        LISTADO DE PRECIOS
+                           IVA INCLUIDO
+     
+     REF    ARTICULO                          EUROS  PESETAS
+     ---    --------                          -----  -------
+     
+     
+     SL16   CHIPIRON 4                         2.65      441
+     SL64   CHIPIRON C MARFRIO                 1.48      246
+     MB15   CHIPIRON KILO                      2.28      379
+     OC01   CHOCO FRESCO                       5.86      975
+     PB59   CHOCO LIMPIO                       5.33      887
+     CF41   COLAS DE MAR                       2.15      358
+     SL38   CORNUDA TROCEADA                   2.54      423
+     SL67   DELICIAS DE MAR                    3.71      617
+     EX06   FILETE DE ATUN 2¦ PIEL             4.68      779
+     MB11   FILETE DE LENGUADO                 7.03     1170
+     MH79   FILETE DE MERLUZA CHICO            4.69      780
+     DP10   FILETE DE MERLUZA GRANDE           5.27      877
+     MH59   FILETE DE MERLUZA HIGIENIZADO      4.13      687
+     MH75   FILETE DORADO                      5.47      910
+     MH62   FILETE FOGONERO (PERCA)            4.69      780
+     SL03   FILETE PEZ ESPADA                  8.20     1364
+     PB21   HUEVAS DE BACALAO 0/200           11.73     1952
+     DJ27   HUEVAS DE BACALAO 2/400           12.61     2098
+     CF38   HUEVAS DE MLZA R TUNACOR           9.84     1637
+            LENGUADOS                         10.79     1795
+     MB12   LOMITOS DE MERLUZA                10.08     1677
+     PA25   LOMO BACALAO                       6.64     1105
+     PL17   LOMOS ATUN SIN PIEL AL VACIO       5.86      975
+     DM690  PARGOS                             3.84      639
+            PEZ ESPADA HIGIENIZADO             8.06     1341
+     FL16   PIJOTA ITALIANA                    3.12      519
+            PIJOTAS                            2.86      476
+     SL39   POTA MARFRIO                       4.89      814
+            PULPO                             10.57     1759
+     DJ39   PULPO COCIDO                      13.48     2243
+     AE20   PUNTILLITA CHINA                   4.69      780
+     SL48   PUNTILLITAS MARROQUIS             12.35     2055
+            RODAJA DE SALMON                   5.45      907
+     SL02   RODAJAS 3A                         3.98      662
+     SL19   RODAJAS 5A                         4.93      820
+     DM450  SALMONETES                         4.30      715
+     FL09   SOLOMILLO ATUN                     6.10     1015
+     CF60   TACO DE PEZ ESPADA                11.32     1883
+     PI04   TAQUITO CAELLA                     2.77      461
+     VI02   TARRINA CAZON ADOBO KILO           5.85      973
+            TRONQUITOS                         2.47      411
+     PI03   TUBO CALAMAR                       3.67      611
+     
+     **  PRECOCINADOS             
+     PL09   ALASKITOS                          1.60      266
+     MH09   APERITIVOS DE POLLO                2.54      423
+     MH58   AROS DE CEBOLLA                    1.17      195
+     CM39   ARROZ 3 DELICIAS 0,450             1.98      329
+     FL33   BACALAO REBOZADO                   1.56      260
+     Page No.     4
+     30-06-03
+                        LISTADO DE PRECIOS
+                           IVA INCLUIDO
+     
+     REF    ARTICULO                          EUROS  PESETAS
+     ---    --------                          -----  -------
+     
+     
+     MH23   BASES DE PIZZAS                    1.09      181
+     MH68   BERENJENAS REBOZADAS               1.91      318
+     CM35   BOCADITO DE POLLO 0,500            2.24      373
+     PC02   BOCADITOS DE MARISCO               5.04      839
+     MH08   BU¥UELOS (KG.)                     3.91      651
+     DJ36   BU¥UELOS BACALAO                   3.84      639
+     MH72   CALAMAR ROMANA                     1.83      304
+     MH57   CANELONES                          1.64      273
+     CM59   CANELONES ATUN 525 GRS             2.86      476
+     CM46   CANELONES ESTUCHE 300              1.17      195
+     PC05   CAPRICHOS DE CALAMAR               3.71      617
+     MH56   CHURROS LAZO (KG.)                 1.40      233
+     CM64   CREPES DE JAMON Y QUESO 300        1.37      228
+     MH83   CROQUETAS BACALAO                  0.78      130
+     FP21   CROQUETAS CASERAS BACALAO          1.25      208
+     FP22   CROQUETAS CASERAS DE JAMON         1.17      195
+     MH11   CROQUETAS CASERAS DE JAMON         1.40      233
+     FP23   CROQUETAS CASERAS DE POLLO         1.33      221
+     MH14   CROQUETAS DE JAMON NORMALES        0.78      130
+     MH02   CROQUETAS DE MERLUZA               0.78      130
+     MH20   CROQUETAS DE POLLO                 0.78      130
+     FD01   CROQUETAS RELLENISIMAS JAMON       2.15      358
+     FD08   CROQUETAS RELLENISIMAS POLLO       1.95      324
+     SL67   DELICIAS DE MAR                    3.71      617
+     FN05   EMPANADILLAS ATUN KILO             2.57      428
+     MA24   ENSALADA DE CANGREJO               8.59     1429
+     FL47   EXQUISITO DE CALAMAR               1.13      188
+     ET05   FILETE POLLO EMPANADO BANDEJA      1.99      331
+     DP04   FLAMENQUINES                       4.93      820
+     PI17   FRUTOS DEL MAR                     3.87      644
+     FL30   GAMBA REBOZADA 0,500               3.51      584
+     FL40   GAMBAS REBOZADAS 0,400             4.19      697
+     ET11   GAMBAS REBOZADAS 300 GRS           2.89      481
+     CM57   LASA¥A ATUN 520 GRS                2.86      476
+     CM48   LASA¥A ESTUCHE 300                 1.17      195
+     MH55   LASA¥A GRATINADA                   1.56      260
+     MH61   MAHEQUESITOS                       1.95      324
+     MH15   MAHESITOS (KG.)                    2.93      488
+     MH13   MAHESITOS 0,500 FOTOGRAFIA         1.76      293
+     MB14   MEJILLON TIGRE                     5.16      859
+     CH24   MENESTRA HUERTANA 0,450            0.98      163
+     PC03   MERLUZA EMPANADA                   4.97      827
+     MH07   MINIBU¥UELOS (KG.)                 3.87      644
+     CM29   MINIEMPANADILLAS 0,400             1.29      215
+     FN02   MINIEMPANADILLAS ATUN KILO         2.57      428
+     MH78   NUGGET POLLO BOLSA                 2.85      474
+     DJ08   PAELLA MARINERA                    1.87      311
+     CF56   PALITOS DE LENGUADO                1.56      260
+     CF08   PALITOS DE MERLUZA                 1.09      181
+     Page No.     5
+     30-06-03
+                        LISTADO DE PRECIOS
+                           IVA INCLUIDO
+     
+     REF    ARTICULO                          EUROS  PESETAS
+     ---    --------                          -----  -------
+     
+     
+     FL29   PALITOS DE MERLUZA 0,400           1.01      168
+     FL34   PAVIAS DE MERLUZA                  1.52      253
+     ET06   PAVIAS MLZA BANDEJA                1.99      331
+     ET14   PECHUGA RELL. JAMON-PIMIENTO       5.85      973
+     ET15   PECHUGA RELL. JAMON-QUESO          5.85      973
+     DP02   PIMIENTO PIQUILLO RELLENO          3.74      622
+     CM60   PIZZA 3 FORMAGGI                   3.58      596
+     CM53   PIZZA 4 ESTACIONES 310 GRS         1.79      298
+     CM52   PIZZA ATUN 310 GRS                 1.79      298
+     CM61   PIZZA CAPRICHOSA                   3.58      596
+     CM50   PIZZA MARGARITA 280 GRS            1.79      298
+     CM51   PIZZA ROMANA 310 GRS               1.79      298
+     FN11   PIZZAS BOLO¥ESA                    2.03      338
+     FN12   PIZZAS CHAMPI¥ONES                 2.03      338
+     FN13   PIZZAS DE ATUN                     2.03      338
+     MH10   POLLITOS                           5.20      865
+     CM36   POLLO EMPANADO                     5.59      930
+     PI02   PREPARACO PAELLA C/V EXT           3.04      506
+     FD39   PREPARADO PAELLA+CALDO             3.71      617
+     DJ31   RABAS CALAMAR EMPANADA             5.16      859
+     MH74   RABAS DE CALAMAR                   1.72      286
+     MH69   REDONDO DE HUEVO                   2.08      346
+     MA23   SALPICON MARISCO                   8.40     1398
+     FD48   SALTO ARROS 3 DELICIAS             2.38      396
+     FD50   SALTO PAELLA MARISCO               2.85      474
+     FD49   SALTO PAELLA VALENCIANA            2.85      474
+     FD46   SALTO POLLO CHILINDRON             3.25      541
+     FD47   SALTO POLLO PEPITORIA              3.25      541
+     FP26   SAN JACOBO                         1.17      195
+     CF09   SAN JACOBO (KG.)                   2.11      351
+     FD17   SOPA DE MARISCOS                   2.65      441
+     MA19   SUCEDANEO DE LANGOSTINO            7.81     1299
+     DP06   TORTILLA PATATA 500 GRS            2.69      448
+     DP08   TORTILLA PATATA 750 GRS            2.86      476
+     ET13   TORTILLITA DE CAMARONES            2.07      344
+     MH27   TORTILLITAS DE BACALAO             3.95      657
+     MH73   VARITAS DE MERLUZA                 1.64      273
+     
+     **  VERDURAS                 
+     CM45   COLIFLOR 2,5                       1.48      246
+     FD25   ENSALADILLA 0,400                  0.86      143
+     CM07   ENSALADILLA 2,5                    0.98      163
+     CH21   ENSALADILLA EXTRA 0.450            0.59       98
+     CM02   ESPARRADOS 2.5                     5.79      963
+     FD20   ESPINACAS 0,400                    1.09      181
+     CM05   ESPINACAS BLOQUE 0,5               1.44      240
+     CM49   GUISANTE COMUN KILO                1.29      215
+     CH02   GUISANTE FINO                      1.63      271
+     CH22   GUISANTE FINO 0,450                0.90      150
+     Page No.     6
+     30-06-03
+                        LISTADO DE PRECIOS
+                           IVA INCLUIDO
+     
+     REF    ARTICULO                          EUROS  PESETAS
+     ---    --------                          -----  -------
+     
+     
+     CM03   GUISANTES 2.5                      1.33      221
+     FD35   GUISANTES MUY TIERNOS              1.05      175
+     FD31   HABAS BABY 0,200                   1.37      228
+     CH03   HABAS FINAS                        2.03      338
+     CH06   HABAS GORDAS                       2.22      369
+     CM04   JUDIAS 2,5                         1.33      221
+     FD40   JUDIAS PLANAS 0,400                1.17      195
+     CM06   JUDIAS PLANAS 2,5                  1.48      246
+     CH04   JUDIAS TROCEADAS                   1.40      233
+     FD18   JUDIAS TROCEADAS 0,400             1.05      175
+     CH23   JUDIAS TROCEADAS 0,450             0.66      110
+     CM09   MENESTRA CON ALCACHOFAS            1.44      240
+     FD21   MENESTRA DE VERDURAS 0,400         1.33      221
+     FD22   MENESTRA DEL PAIS 0,750            2.54      423
+     CH05   MENESTRA HUERTANA                  2.03      338
+     CM08   MENESTRA IMPERIAL 2,5              2.26      376
+     MC01   PATATAS 1/4                        1.48      246
+     MC02   PATATAS 3/8                        1.40      233
+     MC07   PATATAS 3/8 EUROFRITS 2,5          1.17      195
+     MC06   PATATAS CORTE CASERO 2,5           1.52      253
+     MC04   PATATAS KILO FRITORANGE            0.98      163
+     CM41   PATATAS PARISINAS                  2.54      423
+     PI15   PREPARADO PAELLA S/V               3.67      611
+     CM01   REVUELTO AJ. TRIG. Y GAMBAS        4.77      794
+     CM63   REVUELTO DE BACALAO 2,5            4.93      820
+     CH01   REVUELTO MEDITERRANEO              4.50      749
+     FD45   SALTEADO DE MENESTRA               2.15      358
+     FD43   SALTEADO GUISANTE MEDITERRANEA     2.15      358
+     FD42   SALTEADO JUDIAS PRIMAVERA          2.15      358
+     FD44   SALTO ESPINACA MARINERA            2.15      358
+     CM62   VERDURA PARA PISTO 2,5             2.50      416
+     FD16   VERDURA PARA SOPA 0,300            0.98      163
+

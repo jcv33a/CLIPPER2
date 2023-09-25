@@ -1,0 +1,174 @@
+************************* READ_ME.1ST **************************
+*           C L I P P E R   -   S U M M E R   ' 8 7            *
+****************************************************************
+
+Below is a list of files found on the Clipper 5 1/4 inch disks.
+There are three other important documentation files found on the
+disks.
+
+	1.  ERROR.DOC - Describes the new Clipper Error System.
+	2.  EXTEND.DOC - Describes the Extend System C and Assembly
+        language interface.
+	3.  ADDENDUM.DOC - New commands and functions, changes to
+        documented commands and functions, and corrections to 
+        the documentation.
+
+Please print these files for future reference.  
+
+Readme.PRG allows you to view these or any other textfiles
+"online".  The syntax is:
+
+	C>README [<filename>]
+
+************************* FILES *******************************
+
+                   *** DISK 1 ***
+
+READ_ME.1ST        This file, containing the latest
+                   info on this version of Clipper.
+
+CL.BAT             Batch file for compiling and linking your
+                   programs on a hard disk system.
+
+CLD.BAT            Batch file for including the Clipper Debugger
+                   when compiling and linking your programs on a
+                   hard disk system.
+  
+CLIPCOPY.BAT       Batch file for installing Clipper to a hard disk.
+
+CLIPCOPY.HLP       Help file for CLIPCOPY.BAT.
+
+CLIPPER.EXE        The Clipper compiler.
+
+DEBUG.OBJ          The Clipper debugger.
+
+EXTEND.LIB         Library of extended Clipper functions.
+
+OVERLAY.LIB        Library of overlay support routines for PLINK86.
+
+PLINK86.EXE        PLINK86plus, the overlay linker from Phoenix
+                   Technology Limited.
+
+
+                   *** DISK 2 ***
+
+CLIPCOPY.BAT       Batch file for installing Clipper to a hard disk.
+
+CLIPPER.LIB        The link time library.  It needs to be
+                   available to the linker NOT THE COMPILER.
+
+ME.PRG             Textfile editor using MEMOEDIT().
+
+NDX.OBJ            Link this module to your applications to provide
+                   dBASE III PLUS compatible indexes.
+		   
+		   
+                   *** DISK 3 ***
+
+CLIPCOPY.BAT       Batch file for installing Clipper to a hard disk.
+
+
+DBU.PRG            These files make up the source code for DBU.EXE.
+DBUCOPY.PRG
+DBUEDIT.PRG
+DBUINDX.PRG
+DBUHELP.PRG
+DBUSTRU.PRG
+DBUUTIL.PRG
+DBUVIEW.PRG
+DBU.HLP
+MAKEDBU.BAT        To make DBU.EXE, execute this batch file.
+
+README.PRG         Program to view text and program files.
+
+RLDIALOG.PRG       These files make up the source code for RL.EXE.
+RLFRONT.PRG
+RLBACK.PRG
+MAKERL.BAT         To make RL.EXE, execute this batch file.
+
+LINE.EXE           Utility for listing programs to the screen and
+                   printer with line numbers.
+SWITCH.EXE         Allows you to "chain" executable files.
+
+
+                   *** DISK 4 ***
+
+ADDENDUM.DOC       New commands and functions, changes to
+                   documented commands and functions, and
+                   corrections to the documentation.
+
+APNDXJ.PRG         Sample user-defined functions from Appendix J.
+
+ANSI.OBJ           Driver for use with machines running
+                   ANSI standard terminal I/O.
+
+CLIPCOPY.BAT       Batch file for installing Clipper to a hard disk.
+
+DOT.PRG            Sample program that provides a "dot prompt"
+                   or inter-active mode.  DOT can be very useful
+                   for quick testing of expressions, creating
+                   indexes, querying files or using any of the
+                   commands listed when you press F1.
+
+ERROR.DOC          Documentation for the Clipper Error System.
+
+ERRORSYS.PRG       Source code for user-defined functions called
+ALTERROR.PRG       by Clipper's runtime error system.
+
+EXAMPLEA.ASM       Sample assembly code for the Extend System interface.
+
+EXAMPLEC.C         Sample C code for using the Extend System interface.
+
+EXAMPLEP.PRG       Sample Clipper code for user-defined functions.
+
+EXTEND.DOC         Documentation for Clipper's C and Assembly
+                   Language interface.
+
+EXTEND.H           C header file for the Extend System.
+
+EXTENDA.INC        Assembler macros for use with the Extend System.
+EXTENDA.MAC
+
+IBMANSI.OBJ        Driver for use with IBM PC's running
+                   ANSI standard terminal I/O with cursor and
+                   function key support.
+
+INDEX.PRG          Sample program for creating index files.
+
+LOCKS.PRG          User-defined functions for LAN aplications.
+
+MAKE.EXE           Creates batch files to streamline the compile
+                   and link cycle.
+
+MENU.PRG           Sample program for @...PROMPT, MENU and KEYBOARD.
+
+NANDEF.H           C header file for the Extend System.
+
+NETWORK.PRG        Sample program demonstrating workstation
+                   inter-action during shared file programming.
+
+PCBIOS.OBJ         Driver for use in environments that expect
+                   screen writes to go through BIOS calls.
+
+PHILES.PRG         Sample program demonstrating low-level file
+                   I/O functions.
+
+****************** OVERLAYS WITH PLINK86 ************************
+
+When creating overlays, Chapter 7 uses the PLINK86 command
+"OVERLAY PROG, $CONSTANTS" .  This should be changed to 
+"OVERLAY CODE".
+
+If you are going to use the PLINK86 command "DEBUG",  precede it
+with "DEFINE $OVLYVD=$OVLYMD" in you .lnk file as in the
+following example
+
+FI MAIN
+DEFINE $OVLYVD=$OVLYMD
+DEBUG
+VERBOSE
+BEGIN
+	SECTION INTO PROG1 FI PROG1
+	SECTION INTO PROG2 FI PROG2
+	SECTION INTO PROG3 FI PROG3
+END		

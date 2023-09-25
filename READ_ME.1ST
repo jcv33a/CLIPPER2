@@ -1,0 +1,453 @@
+************************* READ_ME.1ST **************************
+*           C L I P P E R   -   A U T U M N   ' 8 6            *
+****************************************************************
+
+This file is organized in the following manner.
+
+I.  FILES
+    List of files found on the three Clipper disks.
+
+II.  ADDITIONAL COMMAND AND FUNCTION INFORMATION
+    Commands added to Clipper not included in the documentation
+    or further documentation about existing commands.
+
+III. COMPILING AND LINKING
+    More information about compiling your programs and linking
+    the resulting object modules.
+
+IV.  PLINK86 PLUS
+    This section contains the comments provided by Phoenix
+    Technologies Limited about the Nantucket version of PLINK86.
+
+
+************************* FILES *******************************
+
+                      *** DISK 1 ***
+
+READ_ME.1ST        This file, containing the latest
+                   info on this version of Clipper.
+
+AFUNC.DOC          Documentation on array handling functions
+                   available in DBU.LIB.
+
+CL.BAT             Batch file for compiling and linking your
+                   programs on a hard disk system.
+
+CLD.BAT            Batch file for including the Clipper Debugger
+                   when compiling and linking your programs on a
+                   hard disk system.
+  
+CLIPCOPY.BAT       Batch file for installing Clipper to a hard disk.
+
+CLIPCOPY.HLP       Help file for CLIPCOPY.BAT.
+
+CLIPPER.EXE        The Clipper compiler.
+
+DBEDIT.DOC         Documentation on the DBEDIT() function
+                   available in DBU.LIB.
+
+DBEDDEMO.PRG       Sample progarm demonstrating DBEDIT().
+
+DBU.DOC            DBU is a stand alone utility designed to
+DBU.LIB            aid the developer with data file manipulation.
+DBU.OBJ            See DBU.DOC for more information.
+DBU.LNK            To make DBU.EXE, execute the following:
+                      C:>PLINK86 @DBU 
+
+EXTEND.DOC         These files contain Clipper procedures,
+EXTENDDB.PRG       C routines, assembly language programs and
+EXTENDDB.OBJ       documentation about the Clipper Extend System.
+EXTENDA.ASM        These UDF's can be used for compatability with
+EXTENDA.DOC        dBASE III PLUS and to extend the language.
+EXTENDA.MAC        EXTENDA.MAC contains macros for passing 
+EXTENDA.OBJ        parameters to and from assembly language.
+EXTENDC.C
+EXTENDC.OBJ
+EXTEND.H
+
+FLOPCOPY.BAT       Batch file for installing Clipper to floppy disks.
+
+
+                   *** DISK 2 ***
+
+CLIPCOPY.BAT       Batch file for installing Clipper to a hard disk.
+
+CLIPPER.LIB        The link time library.  It needs to be
+                   available to the linker NOT THE COMPILER.
+                   If you have a dual floppy system, Clipcopy
+                   will produce three disks for you, one with
+                   CLIPPER.EXE, one with PLINK86.EXE, and one
+                   with CLIPPER.LIB
+
+DEBUG.OBJ          The Clipper debugger
+
+FLOPCOPY.BAT       Batch file for installing Clipper to floppy disks.
+
+MEMO.LIB           Library of functions for use with memofields.
+
+                   *** DISK 3 ***
+
+ANSI.OBJ           Driver for use with machines running
+                   ANSI standard terminal I/O.
+
+CLIPCOPY.BAT       Batch file for installing Clipper to a hard disk.
+
+CREATE.EXE         .DBF file creation utility.
+
+DOT.PRG            Sample program that provides a "dot prompt"
+                   or inter-active mode.  DOT can be very useful
+                   for quick testing of expressions, creating
+                   indexes, querying files or using any of the
+                   commands listed when you press F1.
+
+INDEX.PRG          Sample program for creating index files.
+
+FLOPCOPY.BAT       Batch file for installing Clipper to floppy disks.
+
+LABEL.EXE          .LBL file creation utility.
+
+LINE.EXE           Utility for listing programs to the screen and
+                   printer with line numbers.
+
+LOCKS.PRG          User Defined Functions for LAN aplications.
+
+MENU.PRG           Sample program for @...PROMPT, MENU and KEYBOARD.
+
+NETWORK.PRG        Sample program demonstrating workstation
+                   inter-action during shared file programming.
+
+OVERLAY.LIB        Library of overlay support routines for PLINK86.
+
+PLINK86.EXE        Verstion 2.21 of PLINK86plus, the overlay linker
+                   from Phoenix Technology Limited.
+
+RAINBOW.OBJ        Driver module for the DEC Rainbow.
+
+REPORT.EXE         .FRM file creation utility.
+
+TIPRO.OBJ          Driver module for the TI Professional.
+
+WANG.OBJ           Driver module for the Wang PC.
+
+
+**************** ADDITIONAL COMMAND INFORMATION*****************
+
+--------------------------------------
+     @...GET...PICTURE <clause>
+--------------------------------------
+
+SYNTAX: @ <row,col> GET <variable> PICTURE <clause>
+
+ENHANCEMENT: Two new picture clause functions have been added.
+
+           K   -  Clears the character data currently in the
+                  variable if the first key struck is not a
+                  cursor positioning key.
+           S<n> - Allows the horizontal scrolling of the
+                  variable in a field <n> characters wide.
+
+EXAMPLES:
+
+        To suggest an input value to the user but clear it
+        immediately if he begins typing another.
+
+           file = "ACCOUNTS"
+           @ 1,1 SAY "Enter file" GET file PICTURE "@K"
+           READ
+
+        To allow the horizontal scrolling of a long character
+        variable in a 10 character window.
+
+           long = "This is much too long."
+           @ 1,1 SAY "How long" GET long PICTURE "@S10"
+           READ
+
+--------------------------------------
+     @...TO
+--------------------------------------
+
+SYNTAX:  @ <row,col> [CLEAR] TO <row2,col2> [DOUBLE]
+
+PURPOSE: Draws a single or double line box or CLEAR an area
+         of the screen.  This command can also be used to draw
+         or clear vertical or horizontal lines.
+
+
+--------------------------------------
+     SET CENTURY
+--------------------------------------
+
+SYNTAX:  SET CENTURY on/OFF
+
+PURPOSE: Allows the input and display of dates with the century
+         prefix, in mm/dd/yyyy format.  Clipper supports all
+         dates in the range 01/01/0100 to 12/31/2999.
+
+--------------------------------------
+     SET CLIPPER
+--------------------------------------
+
+SYNTAX:  C>SET CLIPPER= <memory directives>
+                      ^---------------A space between "CLIPPER"
+                                      and "=" will cause the
+                                      memory directive to be
+                                      ignored by your
+                                      application.
+
+--------------------------------------
+     SET COLOR
+--------------------------------------
+
+SYNTAX:  SET COLOR TO [<standard>[,<enhanced>][,<border>]
+         [,<background>][,<unselected>]]
+
+ENHANCEMENT: The <unselected> option allows the current GET to
+             be displayed in the <enhanced> setting while other
+             GETs are the <unselected> color.
+
+             <background> is not currently supported by any
+             machines that Nantucket provides drivers for.
+
+
+EXAMPLE:     This example makes the current GET red on white
+             while the rest are black on white.  Note that it
+             can also be used to test color combinations.
+
+        color = "W/N,R/W,,,N/W       " 
+        DO WHILE .NOT. EMPTY(color) 
+           CLEAR 
+           @ 12,12 SAY 'What color would you like?' GET color 
+           READ 
+           SET COLOR TO &color 
+           CLEAR 
+           STORE SPACE(10) TO mem1,mem2 
+           @ 1,0 SAY "Enter mem1" GET mem1 
+           @ 2,0 SAY "Enter mem2" GET mem2 
+           READ 
+        ENDDO
+
+
+
+--------------------------------------
+     SET ORDER TO
+--------------------------------------
+
+SYNTAX: SET ORDER TO [<expN>]
+
+ENHANCEMENT:  If ORDER is SET to 0, indexes will still be
+              properly maintained.
+
+
+--------------------------------------
+     SET PRINTER TO
+--------------------------------------
+
+SYNTAX: SET PRINTER TO [<device>/<file>]
+
+NOTES:  When redirecting full screen output to a file, the SET
+        DEVICE TO PRINT command is also necessary.
+
+EXAMPLE:
+
+        SET DEVICE TO PRINT
+        SET PRINTER TO Prnfile.txt
+        @ 0,0 SAY "This will go to Prnfile.txt"
+        SET PRINTER TO          && Close file
+        SET DEVICE TO SCREEN
+
+
+
+**************** ADDITIONAL FUNCTIONS **************************
+     The following functions are available when including
+     DBU.LIB when linking.
+
+--------------------------------------
+     AINS()
+--------------------------------------
+
+PURPOSE: Shift array elements up.
+
+NOTES:  See AFUNC.DOC file.
+
+
+--------------------------------------
+     ADEL()
+--------------------------------------
+
+PURPOSE: Shif array elements down.
+
+NOTES:  See AFUNC.DOC file.
+
+
+--------------------------------------
+     AFILL()
+--------------------------------------
+
+PURPOSE: Fill many array elements with one value.
+
+NOTES:  See AFUNC.DOC file.
+
+
+--------------------------------------
+     ASCAN()
+--------------------------------------
+
+PURPOSE: Search for specific value within and array.
+
+NOTES:  See AFUNC.DOC file.
+
+
+--------------------------------------
+     ADIR()
+--------------------------------------
+
+PURPOSE: Fill array with filenames from disk directory.
+
+NOTES:  See AFUNC.DOC file.
+
+--------------------------------------
+     DBEDIT()
+--------------------------------------
+
+PURPOSE: Allows full screen editing of on or more data files.
+         
+NOTES:  See DBEDIT.DOC file.
+
+
+********************* COMPILING AND LINKING *******************
+
+---------------------------------------
+        CLIPPER <filename> 
+---------------------------------------
+The -n option is no longer an option to the compiler.
+
+
+---------------------------------------
+        PLINK86
+---------------------------------------
+Page 5-25 of the manual describes the use of the OVERLAY command
+to make the most efficient use of overlays.  The use of this
+command should be changed to the following when using the Autumn
+'86 compiler.
+
+        OVERLAY PROG, $CONSTANTS
+
+Be sure to make this change in all your .LNK files.
+
+      ---------------------------------------------------
+     |                 IMPORTANT!!!!                     |
+     |   The PROG and $CONSTANTS statements must be in   |
+     |   upper case or they will be ignored.             |
+      ---------------------------------------------------
+
+
+LINKING
+-------
+If your applications do not need the overlay capability provided
+by PLINK86, other linkers may provide faster link times.  The
+following batch file commands will work with the linker provided
+with the Microsoft languages.
+
+CLIPPER %1
+IF NOT ERRORLEVEL 1 LINK  %1 ,,,\CLIPPER\/se:256
+
+
+********* PLINK86plus Nantucket Version 2.21  *********************
+    
+This version of PLINK86plus is a special version for users of
+the Nantucket compiler. It provides all the major features of
+Plink86Plus, version 2.21, except:
+    
+1.  It is configured to work only with the Nantucket compiler
+for dBase III. You may, of course, link C and assembly routines
+with your compiled dBase application.
+
+2.  Some of the extras in PlinkPlus are missing. Specifically,
+this version does not support:
+            
+   Automatic allocation of library modules into overlays.
+
+   Automatic reloading of overwritten overlays.
+
+   Overlay caching in regular, extended (80286), or
+   expanded (EMS/EEMS bank switched) memory.
+
+   Object module merging.
+
+   Several other commands in the full version of PlinkPlus that
+   are intended to support those special features have also been
+   left out.
+          
+3.  The full version of Plink86Plus comes with utilities for
+library management, inspection and comparison of object modules,
+libraries, and executable files, and source code to allow you to
+customize some features of the overlay loader.
+
+The rest of this file documents the differences between the previous 
+Nantucket version of Plink86 and the software on this disk.
+                                                                            
+--------------------------------------------------------------------
+-   PLINK86plus / OVERLAY.LIB                                      -
+--------------------------------------------------------------------
+
+New Features:
+   - the character '#' is now the comment marker, consistent with the
+     syntax used by PMAKER.
+
+   - the NOBELL command:  suppresses the beeps associated with 
+     PLINK86 messages.
+
+  - the WORKFILE command:  redirects the PLINK86 interim disk file,
+    if required.
+
+PLINK86plus is CASE SENSITIVE.  Check your PLINK86 link files for
+    the following "gotchas".  In all cases, adding LOWERCASE/UPPERCASE
+    to the link file will solve the initial incompatibilities.
+
+    1: OVERLAY command:
+       overlay prog, $constants -> overlay PROG, $CONSTANTS
+    2: a library whose symbols are in lowercase, but its index is 
+       in uppercase.
+    3: combining assembler with a case sensitive, high level
+       language.  Microsoft MASM forces all symbols to uppercase:
+       if the high level source code refers to those symbols in 
+       lowercase, turn off case sensitivity with the LOWERCASE or
+       the UPPERCASE command.
+
+
+PREVIOUS VERSIONS OF THE OVERLAY LOADER ARE NOT COMPATIBLE 
+
+ 
+NEW DEFAULT:  by default, PLINK86plus outputs a stripped version
+     of the object file name to the symbol table.  Because there is
+     no standard, this code has gone through several changes:
+
+     PLINK86     1.47: outputs the obj file name, minus the extension
+                       ex: d:path\file.ext( mod.x ) -> d:path\file
+
+     PLINK86plus 2.10: outputs the obj's module name, minus extension
+                       ex: d:path\file.ext( mod.x ) -> mod
+
+     PLINK86plus 2.21: by default, outputs the stripped obj name
+                       ex: d:path\file.ext( mod.x ) -> file
+
+
+NEW ERROR MESSAGES
+
+    Warning 19: Not enough memory for file path
+
+        PLINK86plus will prompt for a path name of a file it
+        cannot locate.  If there is not enough memory to save
+        this string, warning 19 will occur and pass 2 will
+        prompt for the path again.
+
+    Warning 20: Bad allocation size in section ##
+
+        If the calculated section size is not the same as the
+        actual section size, warning 20 occurs.
+
+    Warning 21: Bad fixup count in section ##
+
+        If the pass 1 fixup count is not the same as the
+        pass 2 fixup count, warning 21 occurs.
+

@@ -1,0 +1,47 @@
+*** INDCLIENTES.PRG
+
+PROCEDURE INDCLIENTES
+
+CLEAR
+@2,3 SAY "REGENERANDO INDICES..."
+
+        USE MOROSOS
+
+        INDEX ON REF TO REF
+
+        USE
+
+RETURN
+
+*** CLAVE.PRG
+
+PROCEDURE CLAVE
+
+IF DTOC(DATE())<"01-05-02"
+
+	FOR N=1 TO 3
+
+                CLAVE=SPACE(6)
+                @0,0 SAY "DAME LA CLAVE" GET CLAVE
+                READ
+
+                IF CLAVE$"171296"
+                    RETURN
+                ENDIF
+
+	NEXT
+
+ELSE
+
+        RETURN
+
+ENDIF
+
+SET SAFETY ON
+SET TALK ON
+SET WRAP OFF
+SET COLOR TO
+
+CLEAR
+
+QUIT

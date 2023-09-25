@@ -1,0 +1,145 @@
+DBEDIT
+------
+
+DBEDIT is a new function, callable from within Clipper, that will
+allow full-screen editing of one or more data files. The appearance
+of the screen as well as the definition of many keystrokes can be
+customized to a high degree. To use DBEDIT in a program, include
+DBU.LIB in the list of libraries passed to the linker.
+
+Calling convention:
+
+    DBEDIT(t, l, b, r, fields, ufunc)
+
+    where:
+        t, l, b, r  =   window coordinates..the window must have a
+                        width of at least 3 columns and a height of
+                        at least 4 rows..fields that are wider than
+                        the window will be truncated..memo fields are
+                        not yet supported
+        fields      =   Clipper array containing [alias->]field_name
+                        all fields must exist..if the alias is omitted
+                        the file must be in the current select area
+        ufunc       =   name of user function to be called from DBEDIT
+
+    ufunc(mode, index)
+
+    where:
+        mode = 0    =   idle..ufunc will be called once while DBEDIT
+                        is waiting for a keystroke
+        mode = 1    =   user attempted to cursor past bof
+        mode = 2    =   user attempted to cursor past eof
+        mode = 3    =   database file is empty
+        mode = 4    =   keystroke exception..value passed via LASTKEY()
+        index       =   index into fields array
+        LASTKEY()   =   keypress that caused DBEDIT to call ufunc
+        the current row and column are correct for a GET if desired
+
+        ufunc return values:
+            0       =   quit DBEDIT
+            1       =   continue DBEDIT (normal return)
+            2       =   force refresh..refresh normally occurs
+                        when the user cursors off the screen
+                        (up or down only), but may be necessary
+                        if the indexed order of a file has changed
+            KEYBOARD any keystrokes to be returned to DBEDIT
+
+    caution:
+        DBEDIT does not return any error messages. The parameters
+        must be valid for the function to work properly.
+
+DBEDIT will format the display according to the window
+coordinates and the fields array. All cursor movement keys will
+be handled within DBEDIT.  This includes PgUp, PgDn, Home, End,
+the four arrows, and all valid Ctrl key combinations that
+produce cursor movement. DBEDIT will call the user defined
+function (ufunc) periodically with a mode flag and the current
+index into the array of field names. Ufunc must examine the mode
+and the value of LASTKEY() to choose the proper action, and then
+return a value to DBEDIT. Also, it is possible to return a
+keystroke to DBEDIT by using the KEYBOARD command. Here is a
+bare bones example.
+
+******
+*   Structure for database: C:file1.dbf
+*   Field  Field Name  Type       Width    Dec
+*       1  NAME        Character     15
+*       2  ADDRESS     Character     19
+*       3  PHONE       Character     14
+*   ** Total **                      49
+*
+*   Structure for database: C:file2.dbf
+*   Field  Field Name  Type       Width    Dec
+*       1  CITY        Character     19
+*       2  STATE       Character     2
+*   ** Total **                      22
+******
+
+SELECT 2
+USE FILE2
+SELECT 1
+USE FILE1
+
+SET RELATION TO RECNO() INTO file2
+
+DECLARE fields[5]
+
+* fields in current select area..use caution when changing the current
+*   select area if the alias is not included with these field names
+fields[1] = "NAME"
+fields[2] = "ADDRESS"
+fields[3] = "PHONE"
+
+* fields in secondary select area must include the alias
+fields[4] = "FILE2->CITY"
+fields[5] = "FILE2->STATE"
+
+DBEDIT(4, 0, 22, 79, fields, "ufunc")
+CLEAR ALL
+QUIT
+
+
+******
+*   ufunc()
+*
+*   user defined function to be called from DBEDIT
+******
+FUNCTION ufunc
+
+PARAMETERS mode,i
+PRIVATE cur_field
+
+cur_field = fields[i]
+
+DO CASE
+
+    CASE mode < 4
+        * case action can be implemented for each mode
+        RETURN(1)
+
+    * definitely a keystroke not handled by DBEDIT
+    CASE LASTKEY() = 27
+        * escape key..quit
+        RETURN(0)
+
+    CASE LASTKEY() = 13
+        * enter key..edit the current field
+        @ ROW(), COL() GET &cur_field
+	READ
+
+        * return a right arrow to advance cursor on return
+        * ..any cursor key can be returned this way
+        KEYBOARD CHR(4)
+
+        * don't quit
+        RETURN(1)
+
+    OTHERWISE
+        * don't quit
+        RETURN(1)
+
+ENDCASE
+
+
+* EOF DBEDIT.DOC
+

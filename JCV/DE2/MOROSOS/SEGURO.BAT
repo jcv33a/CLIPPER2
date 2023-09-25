@@ -1,0 +1,2 @@
+XCOPY *.* C:\SEGURO
+

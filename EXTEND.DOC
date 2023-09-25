@@ -1,0 +1,385 @@
+                   THE EXTEND SYSTEM
+
+
+Unlike dBASE, Clipper provides programmers the ability to write
+their own User-Defined Functions (UDFs).  This file looks at
+Clipper's UDF interface and the Extended System which presents
+the source code for a wide variety of UDFs in dBASE, C, and
+8086 Assembler.
+
+Clipper's UDFs not only give you the ability to upgrade without
+waiting for a new release of Clipper from Nantucket but, perhaps
+more importantly, they open up the architecture of the dBASE
+programming language and make it possible for you to provide for
+yourself almost any feature or enhancement you desire.
+
+User-defined functions can be written in  dBASE, C, or
+8086 assembler, and linked in with your compiled dBASE III
+application.  The easiest ones to implement for the dBASE
+programmer are, of course, ones that can be written directly in
+dBASE.  Fortunately, most can.  The functions in C and
+Assembler are used to get information to which the dBASE
+language does not have access, such as database file structures
+that are internal to Clipper or low level information available
+only through DOS interrupts.
+
+User-defined functions written in dBASE are very similar to
+dBASE procedures.  You write as many as you want, put them all
+in one .PRG file, compile it, and link the resulting object file
+in with every program that you compile.  Your compiled dBASE
+program now has the full use of those functions just as though
+they were actually an integral part of the language.  The
+advantage a UDF has over a DO procedure is the versatility of
+situations in which it can be used.  A UDF can be used in places
+that are nearly impossible to DO with a procedure such as INDEX
+ON SOUNDEX(Lastname) TO <file>.  As a procedure, there would
+have to be a field added to the database and every time a record
+was added, you would have to REPLACE the soundex code into it
+after DOing the soundex procedure.  Only then could you INDEX ON
+<soundex code field> TO <file>.
+
+UDFs in General
+---------------
+For consistency with the dBASE language, as well as ease in
+handling your programs, UDFs should always return a data type
+that your program can anticipate.  Newly implemented functions
+and their use in expressions can be quickly tested with the "E"
+(Expression) option in the Clipper debugger.  I recommend using
+a separate file for new functions under development and then,
+once they are written and fully debugged, add them to the
+appropriate Extend file so they become a permanent part of your
+Clipper Extended Library.
+
+The Clipper Extended System currently includes four files;
+   
+   1. Extenddb.prg which is dBASE code
+   2. Extenda.asm which is 8086 Assembly language
+   3. Extendc.c which is C language
+   4. Extend.h which is the C language header file
+
+Including their three object files at link time only increases
+the resulting .EXE file by less than 6,000 bytes.  If the
+resulting file size is an issue, you could compile a subset of
+any of these function files just containing the functions you
+use in an application, and link only that object file at link
+time.
+
+When you create a new UDF, you must take care in choosing a name
+so as not to conflict with internal functions or their four
+letter or longer abbreviations.  Your newly named function must
+be used in your code exactly as declared.  That is to say that
+no abbreviations are permitted at all, so name your UDFs exactly
+as you want to use them.  If you want to use both abbreviations
+and the full form of the word in your code, you could always
+define both spellings as separate UDFs.
+
+
+UDFs written in dBASE
+-----------------------
+Any memvars initialized in a UDF written in dBASE should first
+be declared PRIVATE to prevent potential interference with an
+application's memvars.  To minimize potential interference with
+field names, a prefix of "cl_" is used for all memvars created in
+Extenddb.prg.
+
+Extenddb.prg is the file that contains the UDFs written in
+dBASE.  Notice that its functions are divided into four
+sections.  The first section comprises functions that are found
+in dBASE III PLUS and are designed to operate exactly as dBASE
+III does.  The second section comprises functions that are in
+dBASE III, but are hardcoded with literal values or "constants."
+These are functions that would have to be written in another
+language to be fully operational such as OS(), or functions that
+are not possible to implement in the current version of Clipper
+such as DBF() (Clipper does not currently retain the names of
+database and index files).  Hardcoding these with constants will
+work for most applications.  The third section contains
+functions that do not exist in either dBASE III or Clipper.
+And, finally, a fourth section of EXTERNAL declarations so that
+the compiler will include functions written in other languages
+that are to be linked by the linker.  Functions are listed
+alphabetically within each section for easy reference.
+
+In the first, second, and third sections, the functions are used
+exactly as in dBASE III and require little explanation with two
+exceptions; MOD() and READKEY().  The dBASE III modulus function
+returns values that are different from the modulus operator in
+Clipper.  Clipper's modulus operator is consistent with IBM
+BASIC and Lattice C, while the dBASE MOD() function has a rather
+unique implementation and is primarily for use in the numeric
+parameters of the SUBSTR() function.
+
+The only incompatibility between Clipper and dBASE III PLUS that
+could not be overcome with a UDF is which cursor movement keys
+are allowed to exit from a READ.  These are documented under the
+READKEY() function in Extenddb.prg and the use of Clipper's "no
+exit" keys should be avoided when designing your application's
+user interface if you intend to keep it compatible with both
+dBASE III and Clipper.  Clipper's LASTKEY() not only returns
+different values than READKEY(), but is not applicable to many
+keystrokes because Clipper does not allow as many keys to exit
+the full screen mode as dBASE III does.  These differences are
+fully documented in the READKEY() code to assist you in
+remaining Clipper compatible during your original dBASE III
+implementation.  It's worth mentioning that dBASE III is
+designed as both an interactive system and an application
+development language and, therefore, its cursor movement keys
+must be applicable to both environments.  Since Clipper is
+strictly an application development tool, it makes little sense
+to allow a backspace, for example, to kick the user out of a
+READ.
+
+New Functions
+-------------
+The third section has several miscellaneous functions to deal
+with time-based applications such as scheduling and project
+management, as well as a soundex algorithm and various
+miscellaneous functions.  ALLTRIM() trims both ends of a
+character string, LENNUM() returns the length of a numeric
+including decimals if any, and STRZERO() returns the STR() of a
+numeric with leading zeros instead of blanks.  
+
+SOUNDEX() returns a five character code of a word (usually a
+name), and is used for searching in some name and address
+applications to find names that sound alike, but that may be
+misspelled in the database or by the user.    Now your
+application can use code like this when compiled with Clipper:
+
+        INDEX ON SOUNDEX(Lastname) TO <file>
+        SEEK SOUNDEX(m_lastname)
+
+The Time Data functions demonstrate how to write a series of
+related functions that interact with each other.  The first step
+is to define a valid time string and provide error trapping for
+its entry by the user.  This is documented in the code at the
+beginning of the Time Data functions.  A valid time string is
+defined as HH:MM:SS with a range of 00:00:00 to 23:59:59, the
+same as is returned by the TIME() function in both dBASE and
+Clipper.  Notice how easy data validation is with Clipper's
+VALID <expression> option to the @...GET command.
+
+In order to be able to add, subtract, and perform other
+calculations with time, it must be converted to a numeric form.
+The SECS() function converts a time string into numeric seconds,
+and all calculations are done in this format.  (Please note that
+this function is not the same as Clipper's SECONDS(), which
+returns the DOS time in seconds as a numeric value.)  When  you
+are ready to convert seconds back into a time string for display
+as hours, minutes, and seconds, the TSTRING() function is used.
+If there are more seconds than will fit in a valid time string,
+the DAYS() function is used to get the overflow.  The result of
+DAYS() can be used to add and subtract with the date data type.
+Other functions can be added if your application is based on
+hours or minutes.
+
+ELAPTIME() returns the elapsed time (up to 24 hours) between two
+time strings and is useful in benchmarking operations.  It also
+takes into consideration the time change at midnight for night
+owl programmers like me.
+
+     start_time = TIME()
+     <do operation>
+     end_time = TIME()
+     ? "Elapsed time: " + ELAPTIME( start_time, end_time ) 
+
+AMPM() transforms the 24-hour time string into a 12-hour time
+string with the suffix am or pm.  
+
+        @...SAY AMPM( TIME() )
+
+UDFs in C and Assembler, must be used explicitly in the
+application or be declared external at compile time in order for
+them to be included as symbols at link time.  The use of
+functions in REPORT or LABEL FORMs or in INDEX ON expressions
+will not cause the compiler to include them.  EXTERNAL is now a
+keyword command in Clipper.  It is also used to make procedures
+available when their names may be hidden inside macros in the
+code.  For example, the compiler does not know to tell the
+linker to make the procedure called Example available if the
+code only says STORE "Example" TO memvar, and DO &memvar.
+
+
+UDFs in C
+---------
+Both the dBASE III and Clipper software are written in C.  By
+the time you get dBASE III, you no longer have access to its C
+source-level functions since it has been compiled and linked
+prior to being shipped.  Clipper, on the other hand, is shipped
+with a library that links with your compiled dBASE program at
+link time.  Because you have access to this library at link
+time, you can use any of its internal functions explicitly in
+your code.  The only trick is to know what they are called and
+what they do.  Both Nantucket and Ashton-Tate consider the
+internals of their products highly proprietary, and neither is
+likely to publish all the details of its internal functions.
+What Nantucket has done is to write an interface module that
+"extends" some of Clipper's internal functions to the user in a
+manner that does not reveal much of Clipper's internals.
+
+The C language interface consists of three C files;
+
+   Extend.c, 
+   Extend.h
+   Extendc.c
+
+Extend.c is part of the Clipper source code that contains the
+parameter passing functions used by your C programs.  It is part
+of Clipper's internal code, and you do not need a copy of it.
+Extendc.c is part of the Clipper Extend System and is where you
+create your C language UDFs.  Extend.h is a C header file that
+takes care of your constant definitions and variable
+declarations.  Extend.h is included with a #include statement at
+the beginning of Extendc.c and must be available to your C
+compiler.
+
+All functions internal to Clipper begin with the underscore
+character so as not to conflict with variable or function names
+that you may use.  Nantucket's convention for Clipper is to
+uppercase functions that are dBASE keywords.  Note the use of
+_UPPER() in GETE().  Also note that the dBASE III function
+GETENV() is shortened to its four letter abbreviation GETE() so
+as not to conflict with the Lattice library getenv() function.
+
+Parameters passed to the UDF are tested with the _parinfo()
+function.  _parinfo(0) returns the number of parameters passed,
+and _parinfo(n) returns the type of parameter n where n is the
+number of the parameter as it appears in the UDF parameter list.
+To simplify the syntax and make the code more readable, Extend.h
+sets up several "parameter check" macros that are used in the if
+statements in Extendc.c for parameter checking.
+
+The other "_par" functions are type specific and are used to
+place the incoming UDF parameters appropriately on Clipper's
+internal stack.  For example, look at the GETE() function and
+notice how the parameter is passed to the getenv() function with
+the _parc() function.  The numeric argument to the _par
+functions tell them which parameter in the parameter list is
+being passed.  There is one of these functions for each data
+type.
+
+     _parc()   ::=  character
+     _parl()   ::=  logical
+     _pards()  ::=  date (receives date type as date string YYYYMMDD)
+     _parni()  ::=  numeric as integer
+     _parnl()  ::=  numeric as long
+     _parnd()  ::=  numeric as double
+
+DISKSPACE() and GETE() are the only two functions in Extendc.c
+that receive passed parameters.  Notice that they both begin
+with an if statement to check that a parameter was received and
+that it is of the right type.  Notice also that there is an
+"else" branch that will return something appropriate if the
+parameters are not passed or are not of the type that is
+expected.
+
+Both HEADER() and RECSIZE() use a conditional expression,
+written in C with the ternary operator "?:", that sparked the
+creation of the IIF() function in dBASE and the IF() function in
+Clipper.  The two following expressions are equivalent:
+
+     <exp1> ? <exp2> : <exp3>        /* C Ternary Operator */
+     IIF( <exp1>, <exp2>, <exp3> )   && dBASE IIF() function
+
+There are also type-specific functions for passing return values
+back to Clipper.  One of these must be called prior to exiting
+from your C program in order to maintain the integrity of
+Clipper's stack.
+
+     _retc()   ::=  character
+     _retl()   ::=  logical
+     _retds()  ::=  date (returns date string YYYYMMDD as date type)
+     _retni()  ::=  numeric from integer
+     _retnl()  ::=  numeric from long
+     _retnd()  ::=  numeric from double
+
+If you add procedures in C that do not return a value, use the
+_ret() function which takes care of Clipper's stack without
+returning a value.
+
+     _ret()    ::=  return execution to Clipper (no value passed)
+
+The first half of LUPDATE() is an if statement that gets the
+date from the database file header if there is a file in use,
+otherwise it assigns zeros to the variables.  The second half
+constructs a date string in the form YYYYMMDD and returns it
+with the _retds() function.  This date string is how dates are
+stored in database files and there are internal routines to
+convert from date string to date type and back.  The _pards()
+function uses the same internal routine as the Clipper function
+DTOS() to convert the date type to a date string, and _retds()
+uses another internal routine to convert from date string back
+to the date data type.  It was a design decision to interface
+dates in this format and let anyone who wants to do external
+calculations with dates use their own Julian algorithm.
+
+HEADER() is the one new function in C.  Its use is in backup
+applications that must spread one database file over several
+floppy diskettes without using the DOS backup command.
+
+   USE File
+   DO WHILE .NOT. EOF()
+      WAIT "Insert new disk in drive B, and press any key..."
+      COPY NEXT ( DISKSPACE(2) - HEADER() ) / RECSIZE() TO B:Backup
+      SKIP
+   ENDDO
+   USE
+
+Notice the use of the numeric parameter in DISKSPACE() to refer
+to drive B.  This is unique to this implementation and if the
+parameter is omitted, the UDF DISKSPACE() will address the
+default drive, behaving identically to the DISKSPACE() function
+in dBASE III.
+
+
+UDFs in Assembler (See EXTENDA.ASM and EXTENDA.DOC)
+---------------------------------------------------
+Assembly language can gain access to anything and everything,
+and the function presented is used to get information from a
+BIOS call.  The function ISPRINTER() does not receive a
+parameter.  
+
+The same functions used by Extendc.c are now called as
+procedures to return values.
+
+     _RETC   ::=  character
+     _RETL   ::=  logical
+     _RETDS  ::=  date (returns date string YYYYMMDD as date type)
+     _RETNI  ::=  word as numeric
+     _RETNL  ::=  double word as numeric
+     _RETND  ::=  floating point as numeric
+
+If you just want to include the functions that currently exist
+in Extendc.c and Extenda.asm, their object (.obj) files are
+included, as are all the programs whose listings appear in this
+article.  If you want to add more UDFs to Extenda.asm, you must
+have the IBM Macro Assembler or a compatible assembler to
+produce a new object file.  If you want to add to Extendc.c you
+must have a C compiler (we used Lattice version 3.1) to produce
+a new object file.  When using the Lattice compiler, there are
+three compiler options that must be used.  These are "large
+model" (-ml), "no stack checking" (-v), and "greater than eight
+characters in identifiers" (-n).  The syntax for the Lattice C
+compiler is:
+
+     lc -mls -v -n extendc
+
+Clipper's Extended Library only works beginning with the Winter
+'85 version of Clipper.  
+
+The Clipper Extend System provides you with a powerful, albeit 
+double-edged tool.  You can use it to maintain close compatibility 
+between dBASE III and Clipper, or you can use it to extend Clipper 
+into areas untouched by dBASE.  The choice, at long last, belongs to 
+you.
+
+
+                             *** END ***
+
+About the Author
+----------------
+Tom Rettig is a former member of the dBASE III software development 
+team; coauthor of Ashton-Tate's definitive dBASE book, "The Advanced 
+Programmer's Guide; and owner of Tom Rettig Associates, a Los Angeles 
+based company specializing in dBASE application development and 
+consulting.  Tom is currently writing a book about Clipper.
+
